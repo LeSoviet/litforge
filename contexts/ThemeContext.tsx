@@ -1,13 +1,16 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useColorScheme, View, StyleSheet } from 'react-native';
-import { Theme, getTheme } from '../theme/colors';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Theme, ThemeType, getTheme, getThemeByType } from '../theme/colors';
+import { useThemePersistence } from '../hooks';
 
 interface ThemeContextType {
   theme: Theme;
+  themeType: ThemeType;
   isDarkMode: boolean;
   toggleTheme: () => void;
   setThemeMode: (isDark: boolean) => void;
+  setThemeType: (type: ThemeType) => void;
+  cycleTheme: () => void;
   isLoading: boolean;
 }
 
@@ -26,56 +29,20 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const systemColorScheme = useColorScheme();
-  const [isDarkMode, setIsDarkMode] = useState(systemColorScheme === 'dark');
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    loadThemePreference();
-  }, []);
-
-  const loadThemePreference = async () => {
-    try {
-      const savedTheme = await AsyncStorage.getItem('darkMode');
-      if (savedTheme !== null) {
-        setIsDarkMode(JSON.parse(savedTheme));
-      } else {
-        // Use system preference if no saved preference
-        setIsDarkMode(systemColorScheme === 'dark');
-      }
-    } catch (error) {
-      console.error('Error loading theme preference:', error);
-      setIsDarkMode(systemColorScheme === 'dark');
-    } finally {
-      setIsLoaded(true);
-      setIsLoading(false);
-    }
-  };
-
-  const saveThemePreference = async (isDark: boolean) => {
-    try {
-      await AsyncStorage.setItem('darkMode', JSON.stringify(isDark));
-    } catch (error) {
-      console.error('Error saving theme preference:', error);
-    }
-  };
-
-  const toggleTheme = () => {
-    const newTheme = !isDarkMode;
-    setIsDarkMode(newTheme);
-    saveThemePreference(newTheme);
-  };
-
-  const setThemeMode = (isDark: boolean) => {
-    setIsDarkMode(isDark);
-    saveThemePreference(isDark);
-  };
-
-  const theme = getTheme(isDarkMode);
+  const { 
+    themeType, 
+    isDarkMode, 
+    isLoading, 
+    toggleTheme, 
+    setThemeMode, 
+    setThemeType, 
+    cycleTheme 
+  } = useThemePersistence();
+  
+  const theme = getThemeByType(themeType);
 
   // Don't render until theme is loaded to prevent flash
-  if (!isLoaded) {
+  if (isLoading) {
     return null;
   }
 
@@ -83,9 +50,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     <ThemeContext.Provider
       value={{
         theme,
+        themeType,
         isDarkMode,
         toggleTheme,
         setThemeMode,
+        setThemeType,
+        cycleTheme,
         isLoading,
       }}
     >

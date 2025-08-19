@@ -1,57 +1,23 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
-import { Document, Bookmark, Note, ReadingProgress, ExportData, ImportResult, DocumentError } from '../types/Document';
+import { Document } from '../types/Document';
+import { ExportData } from '../types/DataTypes';
+import { BookmarkService } from './BookmarkService';
+import { NoteService } from './NoteService';
+import { DocumentContentService } from './DocumentContentService';
 import { SettingsService } from './SettingsService';
-import mammoth from 'mammoth';
+import {
+  generateId,
+  getFileExtension,
+  getDocumentType,
+  getFilenameFromUri,
+} from './FileUtilsService';
 
 // Storage keys
 const STORAGE_KEYS = {
   DOCUMENTS: '@litforge_documents',
-  BOOKMARKS: '@litforge_bookmarks',
-  NOTES: '@litforge_notes',
-  SETTINGS: '@litforge_settings',
-  READING_PROGRESS: '@litforge_progress',
 } as const;
-
-// Generate unique ID
-const generateId = (): string => {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-};
-
-// Get file extension from URI
-const getFileExtension = (uri: string): string => {
-  const parts = uri.split('.');
-  return parts[parts.length - 1].toLowerCase();
-};
-
-// Get document type from file extension
-const getDocumentType = (extension: string): Document['type'] | null => {
-  switch (extension) {
-    case 'pdf':
-      return 'pdf';
-    case 'doc':
-      return 'doc';
-    case 'docx':
-      return 'docx';
-    case 'xls':
-      return 'xls';
-    case 'xlsx':
-      return 'xlsx';
-    case 'md':
-    case 'markdown':
-      return 'md';
-    default:
-      return null;
-  }
-};
-
-// Extract filename from URI
-const getFilenameFromUri = (uri: string): string => {
-  const parts = uri.split('/');
-  return parts[parts.length - 1] || 'Documento sin título';
-};
 
 export class DocumentService {
   // Document management
@@ -98,6 +64,9 @@ export class DocumentService {
         to: destinationUri,
       });
 
+      // Get document metadata
+      const metadata = await DocumentContentService.getDocumentMetadata(destinationUri, type);
+
       const document: Document = {
         id: generateId(),
         title: file.name || getFilenameFromUri(file.uri),
@@ -108,7 +77,7 @@ export class DocumentService {
         createdAt: new Date().toISOString(),
         dateAdded: new Date(),
         progress: 0,
-        totalPages: type === 'md' ? 1 : (file.size ? Math.ceil(file.size / 1000) : 1),
+        totalPages: metadata.pageCount || 1,
         bookmarks: [],
         notes: [],
       };
@@ -141,9 +110,9 @@ export class DocumentService {
         const updatedDocuments = documents.filter(doc => doc.id !== documentId);
         await AsyncStorage.setItem(STORAGE_KEYS.DOCUMENTS, JSON.stringify(updatedDocuments));
         
-        // Remove associated bookmarks and notes
-        await this.removeBookmarksByDocument(documentId);
-        await this.removeNotesByDocument(documentId);
+        // Remove associated bookmarks and notes using the new services
+        await BookmarkService.removeBookmarksByDocument(documentId);
+        await NoteService.removeNotesByDocument(documentId);
       }
     } catch (error) {
       console.error('Error removing document:', error);
@@ -191,179 +160,58 @@ export class DocumentService {
     }
   }
 
-  // Content reading
-  static async getDocumentContent(uri: string): Promise<string> {
-    try {
-      const content = await FileSystem.readAsStringAsync(uri);
-      return content;
-    } catch (error) {
-      console.error('Error reading document content:', error);
-      throw new Error('No se pudo leer el contenido del documento');
-    }
+
+
+
+
+
+
+  // Convenience methods that proxy to the new services
+  // These maintain compatibility with existing code
+  
+  // Bookmark methods
+  static async getAllBookmarks() {
+    return BookmarkService.getAllBookmarks();
   }
-
-  static async convertDocxToHtml(uri: string): Promise<string> {
-    try {
-      // Read file as base64
-      const base64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      
-      // Convert base64 to ArrayBuffer
-      const binaryString = atob(base64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      
-      // Use mammoth to convert to HTML
-      const result = await mammoth.convertToHtml({ arrayBuffer: bytes.buffer });
-      return result.value;
-    } catch (error) {
-      console.error('Error converting DOCX:', error);
-      throw new Error('No se pudo convertir el documento DOCX');
-    }
+  
+  static async getBookmarks(documentId: string) {
+    return BookmarkService.getBookmarks(documentId);
   }
-
-  // Bookmark management
-  static async getAllBookmarks(): Promise<Bookmark[]> {
-    try {
-      const bookmarksJson = await AsyncStorage.getItem(STORAGE_KEYS.BOOKMARKS);
-      return bookmarksJson ? JSON.parse(bookmarksJson) : [];
-    } catch (error) {
-      console.error('Error getting bookmarks:', error);
-      return [];
-    }
+  
+  static async addBookmark(bookmark: any) {
+    return BookmarkService.addBookmark(bookmark);
   }
-
-  static async getBookmarks(documentId: string): Promise<Bookmark[]> {
-    try {
-      const allBookmarks = await this.getAllBookmarks();
-      return allBookmarks.filter(bookmark => bookmark.documentId === documentId);
-    } catch (error) {
-      console.error('Error getting document bookmarks:', error);
-      return [];
-    }
+  
+  static async removeBookmark(bookmarkId: string) {
+    return BookmarkService.removeBookmark(bookmarkId);
   }
-
-  static async addBookmark(bookmark: Omit<Bookmark, 'id'>): Promise<Bookmark> {
-    try {
-      const newBookmark: Bookmark = {
-        ...bookmark,
-        id: generateId(),
-      };
-
-      const bookmarks = await this.getAllBookmarks();
-      bookmarks.push(newBookmark);
-      await AsyncStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(bookmarks));
-
-      return newBookmark;
-    } catch (error) {
-      console.error('Error adding bookmark:', error);
-      throw error;
-    }
+  
+  // Note methods
+  static async getAllNotes() {
+    return NoteService.getAllNotes();
   }
-
-  static async removeBookmark(bookmarkId: string): Promise<void> {
-    try {
-      const bookmarks = await this.getAllBookmarks();
-      const updatedBookmarks = bookmarks.filter(bookmark => bookmark.id !== bookmarkId);
-      await AsyncStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(updatedBookmarks));
-    } catch (error) {
-      console.error('Error removing bookmark:', error);
-      throw error;
-    }
+  
+  static async getNotes(documentId: string) {
+    return NoteService.getNotes(documentId);
   }
-
-  static async removeBookmarksByDocument(documentId: string): Promise<void> {
-    try {
-      const bookmarks = await this.getAllBookmarks();
-      const updatedBookmarks = bookmarks.filter(bookmark => bookmark.documentId !== documentId);
-      await AsyncStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(updatedBookmarks));
-    } catch (error) {
-      console.error('Error removing document bookmarks:', error);
-    }
+  
+  static async addNote(note: any) {
+    return NoteService.addNote(note);
   }
-
-  // Note management
-  static async getAllNotes(): Promise<Note[]> {
-    try {
-      const notesJson = await AsyncStorage.getItem(STORAGE_KEYS.NOTES);
-      return notesJson ? JSON.parse(notesJson) : [];
-    } catch (error) {
-      console.error('Error getting notes:', error);
-      return [];
-    }
+  
+  static async updateNote(noteId: string, updates: any) {
+    return NoteService.updateNote(noteId, updates);
   }
-
-  static async getNotes(documentId: string): Promise<Note[]> {
-    try {
-      const allNotes = await this.getAllNotes();
-      return allNotes.filter(note => note.documentId === documentId);
-    } catch (error) {
-      console.error('Error getting document notes:', error);
-      return [];
-    }
+  
+  static async removeNote(noteId: string) {
+    return NoteService.removeNote(noteId);
   }
-
-  static async addNote(note: Omit<Note, 'id'>): Promise<Note> {
-    try {
-      const newNote: Note = {
-        ...note,
-        id: generateId(),
-      };
-
-      const notes = await this.getAllNotes();
-      notes.push(newNote);
-      await AsyncStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
-
-      return newNote;
-    } catch (error) {
-      console.error('Error adding note:', error);
-      throw error;
-    }
+  
+  // Content methods
+  static async getDocumentContent(uri: string, type: string) {
+    return DocumentContentService.getDocumentContent(uri, type);
   }
-
-  static async updateNote(noteId: string, updates: Partial<Note>): Promise<void> {
-    try {
-      const notes = await this.getAllNotes();
-      const noteIndex = notes.findIndex(note => note.id === noteId);
-      
-      if (noteIndex !== -1) {
-        notes[noteIndex] = {
-          ...notes[noteIndex],
-          ...updates,
-          updatedAt: new Date().toISOString(),
-        };
-        await AsyncStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
-      }
-    } catch (error) {
-      console.error('Error updating note:', error);
-      throw error;
-    }
-  }
-
-  static async removeNote(noteId: string): Promise<void> {
-    try {
-      const notes = await this.getAllNotes();
-      const updatedNotes = notes.filter(note => note.id !== noteId);
-      await AsyncStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(updatedNotes));
-    } catch (error) {
-      console.error('Error removing note:', error);
-      throw error;
-    }
-  }
-
-  static async removeNotesByDocument(documentId: string): Promise<void> {
-    try {
-      const notes = await this.getAllNotes();
-      const updatedNotes = notes.filter(note => note.documentId !== documentId);
-      await AsyncStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(updatedNotes));
-    } catch (error) {
-      console.error('Error removing document notes:', error);
-    }
-  }
-
+  
   // Data management
   static async exportAllData(): Promise<ExportData> {
     try {
@@ -392,26 +240,15 @@ export class DocumentService {
 
   static async clearAllData(): Promise<void> {
     try {
-      // Clear AsyncStorage
-      await Promise.all([
-        AsyncStorage.removeItem(STORAGE_KEYS.DOCUMENTS),
-        AsyncStorage.removeItem(STORAGE_KEYS.BOOKMARKS),
-        AsyncStorage.removeItem(STORAGE_KEYS.NOTES),
-      ]);
-
-      // Clear document files
-      try {
-        const documentDir = FileSystem.documentDirectory;
-        if (documentDir) {
-          const files = await FileSystem.readDirectoryAsync(documentDir);
-          const deletePromises = files
-            .filter(file => /\.(pdf|doc|docx|md)$/i.test(file))
-            .map(file => FileSystem.deleteAsync(`${documentDir}${file}`));
-          
-          await Promise.all(deletePromises);
-        }
-      } catch (fileError) {
-        console.warn('Error clearing document files:', fileError);
+      await AsyncStorage.removeItem(STORAGE_KEYS.DOCUMENTS);
+      await BookmarkService.clearAllBookmarks();
+      await NoteService.clearAllNotes();
+      
+      // Also clear the documents directory
+      const documentsDir = FileSystem.documentDirectory + 'documents/';
+      const dirInfo = await FileSystem.getInfoAsync(documentsDir);
+      if (dirInfo.exists) {
+        await FileSystem.deleteAsync(documentsDir);
       }
     } catch (error) {
       console.error('Error clearing all data:', error);

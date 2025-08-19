@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   Alert,
   Modal,
@@ -11,6 +9,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
@@ -19,6 +18,7 @@ import { DocumentService } from '../services/DocumentService';
 import { Document, Note, Bookmark } from '../types/Document';
 import * as FileSystem from 'expo-file-system';
 import { useTheme } from '../contexts/ThemeContext';
+import { useCommonStyles } from '../hooks/useCommonStyles';
 
 function ReaderScreen() {
   const [document, setDocument] = useState<Document | null>(null);
@@ -34,7 +34,7 @@ function ReaderScreen() {
   const [scrollPosition, setScrollPosition] = useState(0);
   
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const { styles, staticStyles } = useCommonStyles();
   const router = useRouter();
   const { documentId, document: documentParam } = useLocalSearchParams();
 
@@ -248,9 +248,6 @@ const loadDocument = async (id: string) => {
 
     setBookmarks(newBookmarks);
     
-    // Show feedback to user
-    Alert.alert('Marcador', message);
-    
     const updatedDoc = { ...document, bookmarks: newBookmarks };
     try {
       await DocumentService.updateDocument(updatedDoc);
@@ -311,9 +308,9 @@ const loadDocument = async (id: string) => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.centerContainer}>
-          <Text style={styles.loadingText}>Cargando documento...</Text>
+          <Text style={styles.text}>Cargando documento...</Text>
         </View>
       </SafeAreaView>
     );
@@ -321,9 +318,9 @@ const loadDocument = async (id: string) => {
 
   if (!document) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.centerContainer}>
-          <Text style={styles.errorText}>Documento no encontrado</Text>
+          <Text style={[styles.text, { color: theme.colors.error }]}>Documento no encontrado</Text>
         </View>
       </SafeAreaView>
     );
@@ -349,14 +346,14 @@ const loadDocument = async (id: string) => {
   const renderContent = () => {
     if (document?.type === 'pdf') {
       return (
-        <View style={styles.pdfContainer}>
-          <View style={styles.pdfPlaceholder}>
+        <View style={styles.container}>
+          <View style={styles.centerContainer}>
             <Ionicons name="document-text" size={64} color={theme.colors.text} />
-            <Text style={styles.pdfPlaceholderText}>PDF Viewer</Text>
-            <Text style={styles.pdfPlaceholderSubtext}>
+            <Text style={[styles.title, staticStyles.marginTop16]}>PDF Viewer</Text>
+            <Text style={[styles.textSecondary, staticStyles.textCenter]}>
               {document.title}
             </Text>
-            <Text style={styles.pdfPlaceholderSubtext}>
+            <Text style={[styles.textSecondary, staticStyles.textCenter]}>
               PDF viewing is temporarily unavailable
             </Text>
           </View>
@@ -365,7 +362,7 @@ const loadDocument = async (id: string) => {
     } else if (document?.type === 'md') {
       return (
         <ScrollView 
-          style={styles.markdownContainer}
+          style={[styles.container, staticStyles.padding16]}
           onScroll={handleScroll}
           scrollEventThrottle={16}
         >
@@ -439,36 +436,36 @@ const loadDocument = async (id: string) => {
       );
     } else if (document?.type === 'doc' || document?.type === 'docx') {
       return (
-        <View style={styles.unsupportedContainer}>
+        <View style={styles.centerContainer}>
           <Ionicons name="document" size={64} color={theme.colors.textSecondary} />
-          <Text style={styles.unsupportedTitle}>
+          <Text style={[styles.title, staticStyles.marginTop16]}>
             Archivo de Word
           </Text>
-          <Text style={styles.unsupportedText}>
+          <Text style={[styles.textSecondary, staticStyles.textCenter, staticStyles.paddingHorizontal20]}>
             Los archivos DOC/DOCX requieren una biblioteca especializada para su visualización. Próximamente disponible.
           </Text>
         </View>
       );
     } else if (document?.type === 'xls' || document?.type === 'xlsx') {
       return (
-        <View style={styles.unsupportedContainer}>
+        <View style={styles.centerContainer}>
           <Ionicons name="grid" size={64} color={theme.colors.textSecondary} />
-          <Text style={styles.unsupportedTitle}>
+          <Text style={[styles.title, staticStyles.marginTop16]}>
             Archivo de Excel
           </Text>
-          <Text style={styles.unsupportedText}>
+          <Text style={[styles.textSecondary, staticStyles.textCenter, staticStyles.paddingHorizontal20]}>
             Los archivos XLS/XLSX requieren una biblioteca especializada para su visualización. Próximamente disponible.
           </Text>
         </View>
       );
     } else {
       return (
-        <View style={styles.unsupportedContainer}>
+        <View style={styles.centerContainer}>
           <Ionicons name="document" size={64} color={theme.colors.textSecondary} />
-          <Text style={styles.unsupportedTitle}>
+          <Text style={[styles.title, staticStyles.marginTop16]}>
             Tipo de archivo no soportado
           </Text>
-          <Text style={styles.unsupportedText}>
+          <Text style={[styles.textSecondary, staticStyles.textCenter, staticStyles.paddingHorizontal20]}>
             Este tipo de archivo ({document?.type}) no es compatible con el visor actual.
           </Text>
         </View>
@@ -477,56 +474,58 @@ const loadDocument = async (id: string) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={goBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
-        </TouchableOpacity>
-        
-        <View style={styles.documentTitle}>
-          <Text style={styles.titleText} numberOfLines={1}>
-            {document.title}
-          </Text>
-          <Text style={styles.pageInfo}>
-            Página {currentPage} de {totalPages}
-          </Text>
-        </View>
-
-        <View style={styles.headerActions}>
-          <TouchableOpacity onPress={toggleBookmark} style={styles.actionButton}>
-            <Ionicons 
-              name={isBookmarked ? "bookmarks" : "bookmarks-outline"} 
-              size={24} 
-              color={isBookmarked ? theme.colors.primary : theme.colors.text} 
-            />
+      <View style={[styles.header, { paddingHorizontal: 16, paddingVertical: 12, marginTop: 8 }]}>
+        {/* Fila única: Botón atrás, indicador de páginas centrado, e iconos */}
+        <View style={[staticStyles.flexRow, staticStyles.alignCenter, staticStyles.justifySpaceBetween]}>
+          <TouchableOpacity onPress={goBack} style={[styles.iconButton, { padding: 8, minWidth: 32, minHeight: 32 }]}>
+            <Ionicons name="arrow-back" size={20} color={theme.colors.text} />
           </TouchableOpacity>
           
-          <TouchableOpacity 
-            onPress={() => setShowNoteModal(true)} 
-            style={styles.actionButton}
-          >
-            <Ionicons name="create" size={24} color={theme.colors.text} />
-          </TouchableOpacity>
+          {/* Indicador de páginas centrado */}
+           <View style={[{ backgroundColor: theme.colors.surface, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16 }]}>
+             <Text style={[{ fontSize: 14, fontWeight: '600', color: theme.colors.text }]}>
+               Página {currentPage} de {totalPages}
+             </Text>
+           </View>
+          
+          {/* Iconos marcador y nota - extremo derecho */}
+          <View style={[staticStyles.flexRow, { gap: 8 }]}>
+            <TouchableOpacity onPress={toggleBookmark} style={[styles.iconButton, { padding: 8, minWidth: 32, minHeight: 32 }]}>
+              <Ionicons 
+                name={isBookmarked ? "bookmarks" : "bookmarks-outline"} 
+                size={20} 
+                color={isBookmarked ? theme.colors.primary : theme.colors.text} 
+              />
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              onPress={() => setShowNoteModal(true)} 
+              style={[styles.iconButton, { padding: 8, minWidth: 32, minHeight: 32 }]}
+            >
+              <Ionicons name="create" size={20} color={theme.colors.text} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
       {/* Content */}
-      <View style={styles.content}>
+      <View style={staticStyles.flex1}>
         {renderContent()}
         
         {/* Notes for current page */}
         {currentPageNotes.length > 0 && (
-          <View style={styles.notesSection}>
-            <Text style={styles.notesSectionTitle}>Notas de esta página:</Text>
+          <View style={[staticStyles.marginTop24, staticStyles.paddingTop16, { borderTopWidth: 1, borderTopColor: theme.colors.border }]}>
+            <Text style={[styles.subtitle, staticStyles.marginBottom12]}>Notas de esta página:</Text>
             {currentPageNotes.map((note) => (
-              <View key={note.id} style={styles.noteItem}>
+              <View key={note.id} style={[styles.card, staticStyles.marginBottom8]}>
                 {note.selectedText && (
-                  <Text style={styles.selectedText}>"{note.selectedText}"</Text>
+                  <Text style={[styles.textSecondary, { fontSize: 14, fontStyle: 'italic', marginBottom: 4 }]}>"{note.selectedText}"</Text>
                 )}
-                <Text style={styles.noteText}>{note.text}</Text>
-                <View style={styles.noteActions}>
-                  <Text style={styles.noteDate}>
+                <Text style={[styles.text, { fontSize: 14, marginBottom: 8 }]}>{note.text}</Text>
+                <View style={[staticStyles.flexRow, staticStyles.justifySpaceBetween, staticStyles.alignCenter]}>
+                  <Text style={[styles.textSecondary, { fontSize: 12 }]}>
                     {note.dateCreated?.toLocaleDateString() || note.createdAt}
                   </Text>
                   <TouchableOpacity onPress={() => removeNote(note.id)}>
@@ -547,11 +546,11 @@ const loadDocument = async (id: string) => {
         onRequestClose={() => setShowNoteModal(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.noteModal}>
-            <Text style={styles.modalTitle}>Agregar Nota</Text>
+          <View style={[styles.modal, { width: '90%', maxWidth: 400 }]}>
+            <Text style={[styles.title, { fontSize: 18, textAlign: 'center', marginBottom: 16 }]}>Agregar Nota</Text>
             
             <TextInput
-              style={styles.noteInput}
+              style={[styles.input, { minHeight: 100, textAlignVertical: 'top', marginBottom: 16 }]}
               placeholder="Escribe tu nota aquí..."
               placeholderTextColor={theme.colors.textSecondary}
               value={noteText}
@@ -560,19 +559,19 @@ const loadDocument = async (id: string) => {
               numberOfLines={4}
             />
 
-            <View style={styles.modalActions}>
+            <View style={[staticStyles.flexRow, staticStyles.justifySpaceBetween]}>
               <TouchableOpacity 
-                style={styles.cancelButton} 
+                style={[styles.button, styles.buttonSecondary, { flex: 1, marginRight: 8 }]} 
                 onPress={() => setShowNoteModal(false)}
               >
-                <Text style={styles.cancelButtonText}>Cancelar</Text>
+                <Text style={styles.buttonSecondaryText}>Cancelar</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={styles.saveButton} 
+                style={[styles.button, styles.buttonPrimary, { flex: 1, marginLeft: 8 }]} 
                 onPress={addNote}
               >
-                <Text style={styles.saveButtonText}>Guardar</Text>
+                <Text style={styles.buttonPrimaryText}>Guardar</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -582,223 +581,6 @@ const loadDocument = async (id: string) => {
   );
 }
 
-const createStyles = (theme: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: theme.colors.text,
-    fontSize: 16,
-  },
-  errorText: {
-    color: theme.colors.error,
-    fontSize: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 50,
-    marginHorizontal: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-  },
-  backButton: {
-    padding: 8,
-    marginRight: 8,
-  },
-  documentTitle: {
-    flex: 1,
-    marginHorizontal: 8,
-  },
-  titleText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.text,
-  },
-  pageInfo: {
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-    marginTop: 2,
-  },
-  headerActions: {
-    flexDirection: 'row',
-  },
-  actionButton: {
-    padding: 8,
-    marginLeft: 8,
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 16,
-  },
-  unsupportedContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  unsupportedTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  unsupportedText: {
-    fontSize: 16,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-    paddingHorizontal: 20,
-  },
-  docxText: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: theme.colors.text,
-  },
-  notesSection: {
-    marginTop: 24,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
-  },
-  notesSectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: 12,
-  },
-  noteItem: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 8,
-  },
-  selectedText: {
-    fontSize: 14,
-    fontStyle: 'italic',
-    color: theme.colors.textSecondary,
-    marginBottom: 4,
-  },
-  noteText: {
-    fontSize: 14,
-    color: theme.colors.text,
-    marginBottom: 8,
-  },
-  noteActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  noteDate: {
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-  },
 
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noteModal: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    padding: 20,
-    margin: 20,
-    width: '90%',
-    maxWidth: 400,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  noteInput: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: theme.colors.text,
-    minHeight: 100,
-    textAlignVertical: 'top',
-    marginBottom: 16,
-  },
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: theme.colors.border,
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginRight: 8,
-  },
-  cancelButtonText: {
-    color: theme.colors.text,
-    fontSize: 16,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  saveButton: {
-    flex: 1,
-    backgroundColor: theme.colors.primary,
-    borderRadius: 8,
-    paddingVertical: 12,
-    marginLeft: 8,
-  },
-  saveButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  pdfContainer: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  pdfPlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  pdfPlaceholderText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  pdfPlaceholderSubtext: {
-    fontSize: 14,
-    color: theme.colors.text,
-    textAlign: 'center',
-    opacity: 0.7,
-    marginBottom: 4,
-  },
-  markdownContainer: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: theme.colors.background,
-  },
-});
 
 export default ReaderScreen;

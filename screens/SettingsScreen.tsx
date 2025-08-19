@@ -11,7 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from 'react-native';
-import { colors, getTheme } from '../theme/colors';
+import { colors, getTheme, ThemeType, themes } from '../theme/colors';
+import { useTheme } from '../contexts/ThemeContext';
 // TODO: Create and implement SettingsService
 import { SettingsService } from '../services/SettingsService';
 import { DocumentService } from '../services/DocumentService';
@@ -19,9 +20,10 @@ import { AppSettings } from '../types/Document';
 import type { SettingsScreenProps } from '../types/navigation';
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
+  const { theme, themeType, setThemeType, cycleTheme } = useTheme();
   const systemColorScheme = useColorScheme();
   const [settings, setSettings] = useState<AppSettings>({
-    darkMode: systemColorScheme === 'dark',
+    darkMode: theme.dark,
     hapticFeedback: true,
     autoSaveProgress: true,
     defaultFontSize: 16,
@@ -34,7 +36,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
     notifications: true,
     brightness: 1.0,
     language: 'es',
-    theme: 'light',
+    theme: themeType,
     lineHeight: 1.5,
     textAlign: 'left',
     autoSave: true,
@@ -42,7 +44,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
     autoBackup: false,
     backupFrequency: 'weekly',
   });
-  const theme = getTheme(settings.darkMode);
   const styles = createStyles(theme);
   const [storageInfo, setStorageInfo] = useState({
     documentsCount: 0,
@@ -54,6 +55,15 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
     loadSettings();
     loadStorageInfo();
   }, []);
+
+  // Sincronizar el estado local cuando cambie el tema desde el contexto
+  useEffect(() => {
+    setSettings(prev => ({
+      ...prev,
+      theme: themeType,
+      darkMode: theme.dark
+    }));
+  }, [themeType, theme.dark]);
 
   const loadSettings = async () => {
     try {
@@ -87,6 +97,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
     try {
       const newSettings = { ...settings, [key]: value };
       setSettings(newSettings);
+      
+      // Sincronizar con el contexto de temas si es necesario
+      if (key === 'theme' && typeof value === 'string') {
+        setThemeType(value as ThemeType);
+      }
+      
       await SettingsService.updateSetting(key, value);
     } catch (error) {
       console.error('Error updating setting:', error);
@@ -95,15 +111,15 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
 
   const clearAllData = () => {
     Alert.alert(
-      'Borrar todos los datos',
-      'Esta acción eliminará todos los documentos, marcadores y notas. ¿Estás seguro?',
+      'Clear All Data',
+      'This action will delete all documents, bookmarks and notes. Are you sure?',
       [
         {
-          text: 'Cancelar',
+          text: 'Cancel',
           style: 'cancel',
         },
         {
-          text: 'Borrar',
+          text: 'Delete',
           style: 'destructive',
           onPress: async () => {
             try {
@@ -114,9 +130,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
                 bookmarksCount: 0,
                 notesCount: 0,
               });
-              Alert.alert('Éxito', 'Todos los datos han sido eliminados');
+              Alert.alert('Success', 'All data has been deleted');
             } catch (error) {
-              Alert.alert('Error', 'No se pudieron eliminar los datos');
+              Alert.alert('Error', 'Could not delete data');
             }
           },
         },
@@ -130,11 +146,22 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
       // Here you would implement the actual export functionality
       // For now, we'll just show an alert
       Alert.alert(
-        'Exportar datos',
-        'Funcionalidad de exportación en desarrollo'
+        'Export Data',
+        'Export functionality in development'
       );
     } catch (error) {
-      Alert.alert('Error', 'No se pudieron exportar los datos');
+      Alert.alert('Error', 'Could not export data');
+    }
+  };
+
+  const getThemeDisplayName = (themeType: ThemeType): string => {
+    switch (themeType) {
+      case 'light':
+        return 'Light';
+      case 'dark':
+        return 'Dark';
+      default:
+        return 'Light';
     }
   };
 
@@ -177,31 +204,28 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Configuración</Text>
+        <Text style={[styles.title, { textAlign: 'center' }]}>Settings</Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {renderSection(
-          'Apariencia',
+          'Appearance',
           <>
             {renderSettingItem(
-              'moon',
-              'Modo oscuro',
-              'Usar tema oscuro en toda la aplicación',
-              <Switch
-                value={settings.darkMode}
-                onValueChange={(value) => updateSetting('darkMode', value)}
-                trackColor={{
-                  false: theme.colors.border,
-                  true: theme.colors.primaryLight,
-                }}
-                thumbColor={theme.colors.primary}
-              />
+              'color-palette',
+              'Color Theme',
+              `Current theme: ${getThemeDisplayName(themeType)}`,
+              <TouchableOpacity
+                style={styles.themeButton}
+                onPress={cycleTheme}
+              >
+                <Text style={styles.themeButtonText}>Cambiar</Text>
+              </TouchableOpacity>
             )}
             {renderSettingItem(
               'text',
-              'Tamaño de fuente predeterminado',
-              `${settings.defaultFontSize}px`,
+              'Default Font Size',
+              undefined,
               <View style={styles.fontSizeControls}>
                 <TouchableOpacity
                   style={styles.fontSizeButton}
@@ -212,8 +236,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
                     )
                   }
                 >
-                  <Ionicons name="remove" size={16} color={theme.colors.text} />
+                  <Text style={[styles.fontSizeButtonText, { color: theme.colors.text }]}>A-</Text>
                 </TouchableOpacity>
+                <Text style={[styles.fontSizeDisplay, { color: theme.colors.text }]}>{settings.defaultFontSize}</Text>
                 <TouchableOpacity
                   style={styles.fontSizeButton}
                   onPress={() =>
@@ -223,7 +248,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
                     )
                   }
                 >
-                  <Ionicons name="add" size={16} color={theme.colors.text} />
+                  <Text style={[styles.fontSizeButtonText, { color: theme.colors.text }]}>A+</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -231,12 +256,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
         )}
 
         {renderSection(
-          'Lectura',
+          'Reading',
           <>
             {renderSettingItem(
               'vibration',
-              'Retroalimentación háptica',
-              'Vibración al cambiar páginas y marcar texto',
+              'Haptic Feedback',
+              'Vibration when turning pages and marking text',
               <Switch
                 value={settings.hapticFeedback}
                 onValueChange={(value) => updateSetting('hapticFeedback', value)}
@@ -279,12 +304,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
         )}
 
         {renderSection(
-          'Almacenamiento',
+          'Storage',
           <>
             {renderSettingItem(
               'library',
-              'Documentos',
-              `${storageInfo.documentsCount} archivos`,
+              'Documents',
+              `${storageInfo.documentsCount} files`,
               <Ionicons
                 name="chevron-forward"
                 size={16}
@@ -293,18 +318,18 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
             )}
             {renderSettingItem(
               'bookmarks',
-              'Marcadores',
-              `${storageInfo.bookmarksCount} marcadores guardados`
+              'Bookmarks',
+              `${storageInfo.bookmarksCount} saved bookmarks`
             )}
             {renderSettingItem(
               'create',
-              'Notas',
-              `${storageInfo.notesCount} notas guardadas`
+              'Notes',
+              `${storageInfo.notesCount} saved notes`
             )}
             {renderSettingItem(
               'cloud-upload',
-              'Exportar datos',
-              'Crear copia de seguridad de tus datos',
+              'Export Data',
+              'Create backup of your data',
               <Ionicons
                 name="chevron-forward"
                 size={16}
@@ -316,32 +341,32 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
         )}
 
         {renderSection(
-          'Acerca de',
+          'About',
           <>
             {renderSettingItem(
               'information-circle',
-              'Versión',
-              '1.0.0'
+              'Version',
+              'LitForge 1.0.0'
             )}
             {renderSettingItem(
               'book',
-              'LitForge',
-              'Un lector de ebooks limpio y minimalista'
+              'About LitForge',
+              'A clean and minimalist ebook reader'
             )}
             {renderSettingItem(
               'heart',
-              'Hecho con amor',
-              'Gratuito, sin anuncios, código abierto'
+              'Made with Love',
+              'Free, no ads, open source'
             )}
           </>
         )}
 
         {renderSection(
-          'Zona de peligro',
+          'Danger Zone',
           renderSettingItem(
             'trash',
-            'Borrar todos los datos',
-            'Eliminar documentos, marcadores y notas',
+            'Clear All Data',
+            'Delete documents, bookmarks and notes',
             <Ionicons
               name="chevron-forward"
               size={16}
@@ -386,11 +411,12 @@ const createStyles = (theme: any) => StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: theme.colors.textSecondary,
+    color: theme.colors.text,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     paddingHorizontal: 20,
     marginBottom: 8,
+    textAlign: 'center',
   },
   sectionContent: {
     backgroundColor: theme.colors.surface,
@@ -440,15 +466,27 @@ const createStyles = (theme: any) => StyleSheet.create({
   fontSizeControls: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
   },
   fontSizeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: theme.colors.border,
+    backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 4,
+  },
+  fontSizeButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.background,
+  },
+  fontSizeDisplay: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.text,
+    minWidth: 24,
+    textAlign: 'center',
   },
   footer: {
     padding: 20,
@@ -459,6 +497,17 @@ const createStyles = (theme: any) => StyleSheet.create({
     fontSize: 12,
     color: theme.colors.textSecondary,
     textAlign: 'center',
+  },
+  themeButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: theme.colors.primary,
+    borderRadius: 6,
+  },
+  themeButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: theme.colors.surface,
   },
 });
 

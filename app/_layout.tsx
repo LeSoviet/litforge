@@ -26,6 +26,21 @@ function AppContent() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen 
+            name="stories" 
+            options={{ 
+              headerShown: true,
+              title: 'Stories',
+              headerStyle: {
+                backgroundColor: theme.colors.background,
+              },
+              headerTintColor: theme.colors.primary,
+              headerTitleStyle: {
+                color: theme.colors.text,
+              },
+              presentation: 'modal'
+            }} 
+          />
+          <Stack.Screen 
             name="reader" 
             options={{ 
               headerShown: false,

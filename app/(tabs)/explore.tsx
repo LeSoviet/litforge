@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Switch,
   TouchableOpacity,
   Alert,
@@ -15,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useFont, FontFamily, fontDisplayNames } from '../../contexts/FontContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useCommonStyles } from '../../hooks/useCommonStyles';
 
 export default function SettingsScreen() {
   const [fontSize, setFontSize] = useState(16);
@@ -23,7 +23,7 @@ export default function SettingsScreen() {
   const { theme, isDarkMode, setThemeMode } = useTheme();
   const { fontFamily, setFontFamily } = useFont();
   const { language, setLanguage, t } = useLanguage();
-  const styles = createStyles(theme);
+  const { styles, staticStyles } = useCommonStyles();
 
   useEffect(() => {
     loadSettings();
@@ -149,12 +149,12 @@ export default function SettingsScreen() {
     subtitle?: string; 
     children: React.ReactNode;
   }) => (
-    <View style={styles.settingItem}>
-      <View style={styles.settingLeft}>
+    <View style={[styles.card, styles.layout.row, { justifyContent: 'space-between' }]}>
+      <View style={[styles.layout.row, staticStyles.flex1]}>
         <Ionicons name={icon as any} size={24} color={theme.colors.primary} />
-        <View style={styles.settingText}>
-          <Text style={styles.settingTitle}>{title}</Text>
-          {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
+        <View style={[styles.spacing.margin.leftMd, staticStyles.flex1]}>
+          <Text style={[styles.text.title, { color: theme.colors.text }]}>{title}</Text>
+          {subtitle && <Text style={[styles.text.caption, { color: theme.colors.textSecondary }]}>{subtitle}</Text>}
         </View>
       </View>
       {children}
@@ -162,14 +162,14 @@ export default function SettingsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{t('settings.title')}</Text>
+    <SafeAreaView style={styles.container.main}>
+      <View style={styles.header.container}>
+        <Text style={[styles.header.title, { textAlign: 'center', color: theme.colors.text }]}>Settings</Text>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.appearance')}</Text>
+      <ScrollView style={staticStyles.flex1} showsVerticalScrollIndicator={false}>
+        <View style={styles.spacing.margin.bottomXl}>
+          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text }]}>Appearance</Text>
           
           <SettingItem
             icon="moon"
@@ -189,19 +189,19 @@ export default function SettingsScreen() {
             title={t('settings.fontSize')}
             subtitle={`Actual: ${fontSize}px`}
           >
-            <View style={styles.fontSizeControls}>
+            <View style={styles.layout.row}>
               <TouchableOpacity
-                style={styles.fontButton}
+                style={[styles.button.primary, styles.spacing.margin.rightSm]}
                 onPress={() => handleFontSizeChange(Math.max(12, fontSize - 2))}
               >
-                <Text style={styles.fontButtonText}>A-</Text>
+                <Text style={styles.button.primaryText}>A-</Text>
               </TouchableOpacity>
-              <Text style={styles.fontSizeText}>{fontSize}</Text>
+              <Text style={[styles.text.body, { minWidth: 24, textAlign: 'center', color: theme.colors.text }, styles.spacing.margin.rightSm]}>{fontSize}</Text>
               <TouchableOpacity
-                style={styles.fontButton}
+                style={styles.button.primary}
                 onPress={() => handleFontSizeChange(Math.min(24, fontSize + 2))}
               >
-                <Text style={styles.fontButtonText}>A+</Text>
+                <Text style={styles.button.primaryText}>A+</Text>
               </TouchableOpacity>
             </View>
           </SettingItem>
@@ -212,17 +212,17 @@ export default function SettingsScreen() {
             subtitle={`Actual: ${fontDisplayNames[fontFamily]}`}
           >
             <TouchableOpacity
-              style={styles.fontSelectorButton}
+              style={[styles.layout.row, styles.spacing.padding.sm, { backgroundColor: theme.colors.surface, borderRadius: 8, borderWidth: 1, borderColor: theme.colors.border }]}
               onPress={showFontSelector}
             >
-              <Text style={styles.fontSelectorText}>{t('common.change')}</Text>
+              <Text style={[styles.text.caption, { color: theme.colors.primary, fontWeight: '500', marginRight: 4 }]}>{t('common.change')}</Text>
               <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
             </TouchableOpacity>
           </SettingItem>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.general')}</Text>
+        <View style={styles.spacing.margin.bottomXl}>
+          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>General</Text>
           
           <SettingItem
             icon="language"
@@ -230,22 +230,22 @@ export default function SettingsScreen() {
             subtitle={language === 'es' ? 'Español' : language === 'en' ? 'English' : 'Português'}
           >
             <TouchableOpacity
-              style={styles.fontSelectorButton}
+              style={[styles.layout.row, styles.spacing.padding.sm, { backgroundColor: theme.colors.surface, borderRadius: 8, borderWidth: 1, borderColor: theme.colors.border }]}
               onPress={showLanguageSelector}
             >
-              <Text style={styles.fontSelectorText}>{t('common.change')}</Text>
+              <Text style={[styles.text.caption, { color: theme.colors.primary, fontWeight: '500', marginRight: 4 }]}>{t('common.change')}</Text>
               <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
             </TouchableOpacity>
           </SettingItem>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.reading')}</Text>
+        <View style={styles.spacing.margin.bottomXl}>
+          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>Reading</Text>
           
           <SettingItem
             icon="save"
             title={t('settings.autoSave')}
-            subtitle="Guardar progreso automáticamente"
+            subtitle="Save reading progress automatically"
           >
             <Switch
               value={autoSave}
@@ -258,7 +258,7 @@ export default function SettingsScreen() {
           <SettingItem
             icon="notifications"
             title={t('settings.notifications')}
-            subtitle="Recibir recordatorios de lectura"
+            subtitle="Receive reading reminders"
           >
             <Switch
               value={notifications}
@@ -269,29 +269,29 @@ export default function SettingsScreen() {
           </SettingItem>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Datos</Text>
+        <View style={styles.spacing.margin.bottomXl}>
+          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>Storage</Text>
           
-          <TouchableOpacity style={styles.dangerButton} onPress={clearAllData}>
+          <TouchableOpacity style={[styles.layout.row, styles.card, { borderWidth: 1, borderColor: theme.colors.error }]} onPress={clearAllData}>
             <Ionicons name="trash" size={24} color={theme.colors.error} />
-            <View style={styles.settingText}>
-              <Text style={[styles.settingTitle, { color: theme.colors.error }]}>
+            <View style={[styles.spacing.margin.leftMd, staticStyles.flex1]}>
+              <Text style={[styles.text.title, { color: theme.colors.error }]}>
                 {t('settings.clearData')}
               </Text>
-              <Text style={styles.settingSubtitle}>
+              <Text style={[styles.text.caption, { color: theme.colors.textSecondary }]}>
                 {t('settings.clearDataDesc')}
               </Text>
             </View>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Acerca de</Text>
-          <View style={styles.aboutContainer}>
-            <Text style={styles.appName}>LitForge</Text>
-            <Text style={styles.version}>Versión 1.0.0</Text>
-            <Text style={styles.description}>
-              Tu compañero de lectura digital para documentos PDF, DOCX y Markdown
+        <View style={styles.spacing.margin.bottomXl}>
+          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>About</Text>
+          <View style={[styles.card, { alignItems: 'center' }]}>
+            <Text style={[styles.text.heading, { color: theme.colors.primary, marginBottom: 4 }]}>LitForge</Text>
+            <Text style={[styles.text.body, { color: theme.colors.textSecondary, marginBottom: 12 }]}>Version 1.0.0</Text>
+            <Text style={[styles.text.caption, { textAlign: 'center', lineHeight: 20, color: theme.colors.text }]}>
+Your digital reading companion for PDF, DOCX and Markdown documents
             </Text>
           </View>
         </View>
@@ -299,140 +299,3 @@ export default function SettingsScreen() {
     </SafeAreaView>
   );
 }
-
-const createStyles = (theme: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 20,
-    marginHorizontal: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  section: {
-    marginBottom: 32,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: 20,
-  },
-  settingItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-  },
-  settingLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  settingText: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: theme.colors.text,
-    marginBottom: 2,
-  },
-  settingSubtitle: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-  },
-  fontSizeControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  fontButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginHorizontal: 4,
-  },
-  fontButtonText: {
-    color: theme.colors.background,
-    fontWeight: '600',
-  },
-  fontSizeText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: theme.colors.text,
-    marginHorizontal: 8,
-    minWidth: 24,
-    textAlign: 'center',
-  },
-  fontSelectorButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: theme.colors.surface,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  fontSelectorText: {
-    fontSize: 14,
-    color: theme.colors.primary,
-    fontWeight: '500',
-    marginRight: 4,
-  },
-  dangerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: theme.colors.error,
-  },
-  aboutContainer: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    padding: 20,
-    alignItems: 'center',
-  },
-  appName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.colors.primary,
-    marginBottom: 4,
-  },
-  version: {
-    fontSize: 16,
-    color: theme.colors.textSecondary,
-    marginBottom: 12,
-  },
-  description: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-});

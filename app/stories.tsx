@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   SafeAreaView,
@@ -14,6 +13,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { DocumentService } from '../services/DocumentService';
 import { Asset } from 'expo-asset';
+import { useCommonStyles } from '../hooks/useCommonStyles';
 
 // Mapeo de archivos .md usando require()
 const storyAssets = {
@@ -162,7 +162,7 @@ export default function StoriesScreen() {
   const { theme } = useTheme();
   const { t } = useLanguage();
   const router = useRouter();
-  const styles = createStyles(theme);
+  const { styles, staticStyles } = useCommonStyles();
 
   useEffect(() => {
     loadStories();
@@ -179,7 +179,7 @@ export default function StoriesScreen() {
         id: `story-${index}`,
         title: fileName.replace('.md', '').replace(/_/g, ' '),
         fileName,
-        asset: Asset.fromModule(storyAssets[fileName]),
+        asset: Asset.fromModule((storyAssets as Record<string, any>)[fileName]),
       }));
 
       setStories(storyList);
@@ -207,17 +207,17 @@ export default function StoriesScreen() {
 
   const renderStory = ({ item }: { item: Story }) => (
     <TouchableOpacity
-      style={styles.storyItem}
+      style={[styles.card, staticStyles.marginBottomMedium]}
       onPress={() => handleStoryPress(item)}
     >
-      <View style={styles.storyIcon}>
+      <View style={[styles.iconContainer, staticStyles.marginRightMedium]}>
         <Ionicons name="book" size={24} color={theme.colors.primary} />
       </View>
-      <View style={styles.storyInfo}>
-        <Text style={styles.storyTitle} numberOfLines={2}>
+      <View style={staticStyles.flex1}>
+        <Text style={[styles.cardTitle, staticStyles.marginBottomSmall]} numberOfLines={2}>
           {item.title}
         </Text>
-        <Text style={styles.storyMeta}>{t('stories.freeStory')}</Text>
+        <Text style={styles.textSecondary}>{t('stories.freeStory')}</Text>
       </View>
       <Ionicons name="chevron-forward" size={20} color={theme.colors.textSecondary} />
     </TouchableOpacity>
@@ -225,19 +225,19 @@ export default function StoriesScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={styles.loadingText}>{t('stories.loading')}</Text>
+          <Text style={[styles.textSecondary, staticStyles.marginTopMedium]}>{t('stories.loading')}</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.content}>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.subtitle, staticStyles.textCenter, staticStyles.marginVerticalMedium]}>
           {t('stories.subtitle')}
         </Text>
         
@@ -245,103 +245,10 @@ export default function StoriesScreen() {
           data={stories}
           renderItem={renderStory}
           keyExtractor={item => item.id}
-          contentContainerStyle={styles.listContainer}
+          contentContainerStyle={staticStyles.paddingBottomLarge}
           showsVerticalScrollIndicator={false}
         />
       </View>
     </SafeAreaView>
   );
 }
-
-const createStyles = (theme: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 20,
-    marginHorizontal: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-  },
-  backButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-  },
-  placeholder: {
-    width: 40,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    marginVertical: 16,
-    lineHeight: 22,
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  storyItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: theme.colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  storyIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.colors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  storyInfo: {
-    flex: 1,
-  },
-  storyTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: 4,
-  },
-  storyMeta: {
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: theme.colors.textSecondary,
-  },
-});

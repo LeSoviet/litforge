@@ -21,6 +21,11 @@ export interface ThemeColors {
   error: string;
   success: string;
   warning: string;
+  secondary: string;
+  info: string;
+  accent: string;
+  card: string;
+  notification: string;
   
   // Reading specific colors
   readerBackground: string;
@@ -29,8 +34,12 @@ export interface ThemeColors {
   highlightGreen: string;
 }
 
+export type ThemeType = 'light' | 'dark';
+
 export interface Theme {
   colors: ThemeColors;
+  dark: boolean;
+  type: ThemeType;
   spacing: {
     xs: number;
     sm: number;
@@ -87,6 +96,11 @@ const lightColors: ThemeColors = {
   error: '#dc2626',
   success: '#059669',
   warning: '#d97706',
+  secondary: '#6b7280',
+  info: '#0ea5e9',
+  accent: '#8b5cf6',
+  card: '#ffffff',
+  notification: '#ef4444',
   
   // Reading experience
   readerBackground: '#fefefe',
@@ -116,6 +130,11 @@ const darkColors: ThemeColors = {
   error: '#ef4444',
   success: '#10b981',
   warning: '#f59e0b',
+  secondary: '#6b7280',
+  info: '#0ea5e9',
+  accent: '#8b5cf6',
+  card: '#1e293b',
+  notification: '#ef4444',
   
   // Reading experience (dark mode)
   readerBackground: '#0f172a',
@@ -124,7 +143,11 @@ const darkColors: ThemeColors = {
   highlightGreen: '#064e3b',
 };
 
-// Base theme structure
+// Paper theme removed - only light and dark modes available
+
+
+
+// Base theme configurationstructure
 const baseTheme = {
   spacing: {
     xs: 4,
@@ -165,25 +188,60 @@ const baseTheme = {
 export const lightTheme: Theme = {
   colors: lightColors,
   ...baseTheme,
+  dark: false,
+  type: 'light',
 };
 
 export const darkTheme: Theme = {
   colors: darkColors,
   ...baseTheme,
+  dark: true,
+  type: 'dark',
 };
 
-// Export colors object for easy access
+// Paper theme removed
+
+// Export colors object
 export const colors = {
   light: lightColors,
   dark: darkColors,
 };
 
-// Default theme (light)
+// All available themes
+export const themes = {
+  light: lightTheme,
+  dark: darkTheme,
+};
+
+// Default theme
 export const theme = lightTheme;
 
-// Theme utilities
+// Theme getter function (legacy - for backward compatibility)
 export const getTheme = (isDark: boolean): Theme => {
   return isDark ? darkTheme : lightTheme;
+};
+
+// New theme getter function with theme type support
+export const getThemeByType = (themeType: ThemeType): Theme => {
+  switch (themeType) {
+    case 'light':
+      return lightTheme;
+    case 'dark':
+      return darkTheme;
+    default:
+      return lightTheme;
+  }
+};
+
+// Helper function to get theme by type and dark mode preference
+export const getThemeByPreference = (themeType: ThemeType, isDark?: boolean): Theme => {
+  if (isDark !== undefined) {
+    // If dark mode preference is specified, use it
+    if (themeType === 'light' || themeType === 'dark') {
+      return isDark ? darkTheme : lightTheme;
+    }
+  }
+  return themes[themeType];
 };
 
 // Common shadow styles
