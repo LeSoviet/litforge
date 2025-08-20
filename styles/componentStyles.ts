@@ -2,6 +2,7 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '../types';
 import { SPACING, BORDER_RADIUS, SHADOWS, FONT_SIZES, FONT_WEIGHTS } from './designTokens';
+import { useAndroidFixes } from './androidFixes';
 
 /**
  * Estilos de componentes que dependen del tema
@@ -24,12 +25,16 @@ export const createComponentStyles = (theme: Theme) => {
       fontWeight: FONT_WEIGHTS.bold,
       color: theme.colors.text,
       textAlign: 'center',
+      textAlignVertical: 'center',
+      includeFontPadding: false,
     },
     
     headerSubtitle: {
       fontSize: FONT_SIZES.md,
       color: theme.colors.textSecondary,
       textAlign: 'center',
+      textAlignVertical: 'center',
+      includeFontPadding: false,
       marginTop: SPACING.xs,
     },
 

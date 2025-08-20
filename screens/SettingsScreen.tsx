@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
-import { colors, getTheme, ThemeType, themes } from '../theme/colors';
+import type { Theme, ThemeType } from '../theme/colors';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAndroidFixes } from '../styles/androidFixes';
 // TODO: Create and implement SettingsService
 import { SettingsService } from '../services/SettingsService';
 import { DocumentService } from '../services/DocumentService';
@@ -21,7 +21,7 @@ import type { SettingsScreenProps } from '../types/navigation';
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
   const { theme, themeType, setThemeType, cycleTheme } = useTheme();
-  const systemColorScheme = useColorScheme();
+  const androidFixes = useAndroidFixes(theme);
   const [settings, setSettings] = useState<AppSettings>({
     darkMode: theme.dark,
     hapticFeedback: true,
@@ -29,7 +29,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
     defaultFontSize: 16,
     keepScreenOn: false,
     defaultReadingMode: 'scroll',
-    highlightColor: '#3B82F6',
+    highlightColor: theme.colors.primaryLight,
     fontSize: 16,
     fontFamily: 'Inter',
     readingMode: 'scroll',
@@ -44,7 +44,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
     autoBackup: false,
     backupFrequency: 'weekly',
   });
-  const styles = createStyles(theme);
+  const styles = createStyles(theme, androidFixes);
   const [storageInfo, setStorageInfo] = useState({
     documentsCount: 0,
     bookmarksCount: 0,
@@ -99,8 +99,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
       setSettings(newSettings);
       
       // Sincronizar con el contexto de temas si es necesario
-      if (key === 'theme' && typeof value === 'string') {
-        setThemeType(value as ThemeType);
+      if (key === 'theme' && (value === 'light' || value === 'dark')) {
+        setThemeType(value);
       }
       
       await SettingsService.updateSetting(key, value);
@@ -194,6 +194,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
     </TouchableOpacity>
   );
 
+
   const renderSection = (title: string, children: React.ReactNode) => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -204,7 +205,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={[styles.title, { textAlign: 'center' }]}>Settings</Text>
+        <Text style={[styles.title]}>Settings</Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -219,7 +220,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
                 style={styles.themeButton}
                 onPress={cycleTheme}
               >
-                <Text style={styles.themeButtonText}>Cambiar</Text>
+                <Text style={styles.themeButtonText}>Change</Text>
               </TouchableOpacity>
             )}
             {renderSettingItem(
@@ -238,7 +239,6 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
                 >
                   <Text style={[styles.fontSizeButtonText, { color: theme.colors.text }]}>A-</Text>
                 </TouchableOpacity>
-                <Text style={[styles.fontSizeDisplay, { color: theme.colors.text }]}>{settings.defaultFontSize}</Text>
                 <TouchableOpacity
                   style={styles.fontSizeButton}
                   onPress={() =>
@@ -274,8 +274,8 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
             )}
             {renderSettingItem(
               'save',
-              'Guardar progreso automáticamente',
-              'Guardar posición de lectura al cambiar de página',
+              'Auto-save Progress',
+              'Save reading position when changing pages',
               <Switch
                 value={settings.autoSaveProgress}
                 onValueChange={(value) => updateSetting('autoSaveProgress', value)}
@@ -340,26 +340,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
           </>
         )}
 
-        {renderSection(
-          'About',
-          <>
-            {renderSettingItem(
-              'information-circle',
-              'Version',
-              'LitForge 1.0.0'
-            )}
-            {renderSettingItem(
-              'book',
-              'About LitForge',
-              'A clean and minimalist ebook reader'
-            )}
-            {renderSettingItem(
-              'heart',
-              'Made with Love',
-              'Free, no ads, open source'
-            )}
-          </>
-        )}
+
 
         {renderSection(
           'Danger Zone',
@@ -376,17 +357,14 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
           )
         )}
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            LitForge v1.0.0 • Hecho con React Native + Expo
-          </Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-const createStyles = (theme: any) => StyleSheet.create({
+type AndroidFixesStyles = ReturnType<typeof useAndroidFixes>;
+
+const createStyles = (theme: Theme, androidFixes: AndroidFixesStyles) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -401,6 +379,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: theme.colors.text,
+    ...(androidFixes.textCenterFix || {}),
   },
   content: {
     flex: 1,
@@ -416,7 +395,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     letterSpacing: 0.5,
     paddingHorizontal: 20,
     marginBottom: 8,
-    textAlign: 'center',
+    ...(androidFixes.textCenterFix || {}),
   },
   sectionContent: {
     backgroundColor: theme.colors.surface,
@@ -449,6 +428,7 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
   settingText: {
     flex: 1,
+    flexWrap: 'wrap', // Allow text to wrap
   },
   settingTitle: {
     fontSize: 16,
@@ -462,19 +442,29 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
   settingRight: {
     marginLeft: 12,
+    justifyContent: 'center', // Center content vertically
   },
   fontSizeControls: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 20,
+    minWidth: 120, // Ensure consistent width
+    justifyContent: 'space-between',
   },
   fontSizeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
+    ...(androidFixes.buttonCenterFix || {}),
+    elevation: 2, // Add shadow for Android
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
   },
   fontSizeButtonText: {
     fontSize: 14,
@@ -485,29 +475,33 @@ const createStyles = (theme: any) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: theme.colors.text,
-    minWidth: 24,
+    minWidth: 32,
     textAlign: 'center',
-  },
-  footer: {
-    padding: 20,
-    alignItems: 'center',
-    marginTop: 32,
-  },
-  footerText: {
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
+    lineHeight: 36, // Match button height for perfect vertical alignment
+    ...(androidFixes.textCenterFix || {}),
   },
   themeButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     backgroundColor: theme.colors.primary,
-    borderRadius: 6,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    minWidth: 80, // Ensure consistent button width
+    ...(androidFixes.buttonCenterFix || {}),
+    elevation: 2, // Add shadow for better visibility
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
   },
   themeButtonText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     color: theme.colors.surface,
+    textAlign: 'center',
+    ...(androidFixes.textCenterFix || {}),
   },
 });
 

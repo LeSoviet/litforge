@@ -111,36 +111,36 @@ const lightColors: ThemeColors = {
 
 // Dark theme with deep blue accent
 const darkColors: ThemeColors = {
-  // Deep blue primary palette (adjusted for dark mode)
-  primary: '#3b82f6',
-  primaryLight: '#60a5fa',
-  primaryDark: '#2563eb',
+  // Deep blue primary palette (adjusted for dark mode - softer)
+  primary: '#7AA2F7',
+  primaryLight: '#9BBCFF',
+  primaryDark: '#4F71C7',
   
-  // Dark backgrounds
-  background: '#0f172a', // Very dark blue-gray
-  surface: '#1e293b', // Dark blue-gray
+  // Dark backgrounds - Softer deep blue for better readability
+  background: '#0E1B2A', // Deep navy blue
+  surface: '#15273B', // Slightly lighter for surfaces
   
   // Text hierarchy for dark mode
-  text: '#f1f5f9',
-  textSecondary: '#94a3b8',
+  text: '#E6EAF2', // Off-white with subtle blue tint
+  textSecondary: '#B7C2D0', // Softer secondary text
   
   // UI elements for dark mode
-  border: '#334155',
+  border: '#1F2D3D', // More subtle yet visible borders
   shadow: '#000000',
   error: '#ef4444',
   success: '#10b981',
   warning: '#f59e0b',
   secondary: '#6b7280',
-  info: '#0ea5e9',
+  info: '#59A7F5',
   accent: '#8b5cf6',
-  card: '#1e293b',
+  card: '#112131', // Card with better contrast on background
   notification: '#ef4444',
   
   // Reading experience (dark mode)
-  readerBackground: '#0f172a',
-  highlightYellow: '#451a03',
-  highlightBlue: '#1e3a8a',
-  highlightGreen: '#064e3b',
+  readerBackground: '#0B1622',
+  highlightYellow: '#4b3a1a',
+  highlightBlue: '#1f3b6e',
+  highlightGreen: '#0b3b34',
 };
 
 // Paper theme removed - only light and dark modes available

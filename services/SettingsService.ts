@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppSettings, ThemePreference } from '../types/Document';
+import { colors } from '../theme/colors';
 
 // Storage key for settings
 const SETTINGS_KEY = '@litforge_settings';
@@ -12,7 +13,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   defaultFontSize: 16,
   keepScreenOn: false,
   defaultReadingMode: 'scroll',
-  highlightColor: '#3B82F6',
+  highlightColor: colors.light.primaryLight,
   fontSize: 16,
   fontFamily: 'Inter',
   readingMode: 'scroll',
@@ -240,94 +241,6 @@ export class SettingsService {
     } catch (error) {
       console.error('Error toggling notifications:', error);
       throw error;
-    }
-  }
-
-  static async toggleAutoBackup(): Promise<boolean> {
-    try {
-      const currentSettings = await this.getSettings();
-      const newAutoBackup = !currentSettings.autoBackup;
-      await this.setSetting('autoBackup', newAutoBackup);
-      return newAutoBackup;
-    } catch (error) {
-      console.error('Error toggling auto backup:', error);
-      throw error;
-    }
-  }
-
-  // Brightness control
-  static async updateBrightness(brightness: number): Promise<void> {
-    try {
-      // Clamp brightness between 0.1 and 1.0
-      const clampedBrightness = Math.max(0.1, Math.min(1.0, brightness));
-      await this.setSetting('brightness', clampedBrightness);
-    } catch (error) {
-      console.error('Error updating brightness:', error);
-      throw error;
-    }
-  }
-
-  // Language setting
-  static async setLanguage(language: string): Promise<void> {
-    try {
-      await this.setSetting('language', language);
-    } catch (error) {
-      console.error('Error setting language:', error);
-      throw error;
-    }
-  }
-
-  // Export settings
-  static async exportSettings(): Promise<string> {
-    try {
-      const settings = await this.getSettings();
-      return JSON.stringify(settings, null, 2);
-    } catch (error) {
-      console.error('Error exporting settings:', error);
-      throw error;
-    }
-  }
-
-  // Import settings
-  static async importSettings(settingsJson: string): Promise<AppSettings> {
-    try {
-      const importedSettings = JSON.parse(settingsJson);
-      
-      // Validate imported settings against default structure
-      const validatedSettings: Partial<AppSettings> = {};
-      
-      Object.keys(DEFAULT_SETTINGS).forEach(key => {
-        const settingKey = key as keyof AppSettings;
-        if (importedSettings.hasOwnProperty(key)) {
-          validatedSettings[settingKey] = importedSettings[key];
-        }
-      });
-      
-      return await this.updateSettings(validatedSettings);
-    } catch (error) {
-      console.error('Error importing settings:', error);
-      throw error;
-    }
-  }
-
-  // Get reading statistics
-  static async getReadingStats(): Promise<any> {
-    try {
-      // This would integrate with DocumentService to get reading statistics
-      // For now, return basic info
-      const settings = await this.getSettings();
-      
-      return {
-        preferredFontSize: settings.fontSize,
-        preferredFontFamily: settings.fontFamily,
-        readingMode: settings.readingMode,
-        darkModeEnabled: settings.darkMode,
-        totalReadingTime: 0, // TODO: Implement reading time tracking
-        averageReadingSpeed: 0, // TODO: Implement reading speed calculation
-      };
-    } catch (error) {
-      console.error('Error getting reading stats:', error);
-      return {};
     }
   }
 }

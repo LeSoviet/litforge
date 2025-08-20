@@ -378,48 +378,66 @@ export default function LibraryScreen() {
 
       {/* Filters */}
       {showFilters && (
-        <View style={[styles.container.surface, styles.spacing.padding.md, { borderBottomWidth: 1, borderBottomColor: theme.colors.border }]}>
-          <View style={styles.spacing.margin.bottomSm}>
-            <Text style={[styles.text.label, styles.spacing.margin.bottomSm]}>Sort by:</Text>
+        <View style={[styles.container.surface, styles.spacing.padding.sm, { borderBottomWidth: 1, borderBottomColor: theme.colors.border }]}>
+          <View style={styles.spacing.margin.bottomXs}>
+            <Text style={[styles.text.label, styles.spacing.margin.bottomXs]}>Sort by:</Text>
             <View style={[styles.layout.row, { flexWrap: 'wrap' }]}>
               <TouchableOpacity
                 style={[styles.input.chip, sortBy === 'date' && styles.input.chipActive]}
-                onPress={() => setSortBy('date')}
+                onPress={() => {
+                  setSortBy('date');
+                  setTimeout(() => setShowFilters(false), 500);
+                }}
               >
                 <Text style={[styles.input.chipText, sortBy === 'date' && styles.input.chipTextActive]}>Date</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.input.chip, sortBy === 'name' && styles.input.chipActive]}
-                onPress={() => setSortBy('name')}
+                onPress={() => {
+                  setSortBy('name');
+                  setTimeout(() => setShowFilters(false), 500);
+                }}
               >
                 <Text style={[styles.input.chipText, sortBy === 'name' && styles.input.chipTextActive]}>Name</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.input.chip, sortBy === 'type' && styles.input.chipActive]}
-                onPress={() => setSortBy('type')}
+                onPress={() => {
+                  setSortBy('type');
+                  setTimeout(() => setShowFilters(false), 500);
+                }}
               >
                 <Text style={[styles.input.chipText, sortBy === 'type' && styles.input.chipTextActive]}>Type</Text>
               </TouchableOpacity>
             </View>
           </View>
           <View>
-            <Text style={[styles.text.label, styles.spacing.margin.bottomSm]}>Filter by type:</Text>
+            <Text style={[styles.text.label, styles.spacing.margin.bottomXs]}>Filter by type:</Text>
             <View style={[styles.layout.row, { flexWrap: 'wrap' }]}>
               <TouchableOpacity
                 style={[styles.input.chip, filterType === 'all' && styles.input.chipActive]}
-                onPress={() => setFilterType('all')}
+                onPress={() => {
+                  setFilterType('all');
+                  setTimeout(() => setShowFilters(false), 500);
+                }}
               >
                 <Text style={[styles.input.chipText, filterType === 'all' && styles.input.chipTextActive]}>All</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.input.chip, filterType === 'pdf' && styles.input.chipActive]}
-                onPress={() => setFilterType('pdf')}
+                onPress={() => {
+                  setFilterType('pdf');
+                  setTimeout(() => setShowFilters(false), 500);
+                }}
               >
                 <Text style={[styles.input.chipText, filterType === 'pdf' && styles.input.chipTextActive]}>PDF</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.input.chip, filterType === 'md' && styles.input.chipActive]}
-                onPress={() => setFilterType('md')}
+                onPress={() => {
+                  setFilterType('md');
+                  setTimeout(() => setShowFilters(false), 500);
+                }}
               >
                 <Text style={[styles.input.chipText, filterType === 'md' && styles.input.chipTextActive]}>Markdown</Text>
               </TouchableOpacity>

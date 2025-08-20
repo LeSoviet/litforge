@@ -15,6 +15,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useFont, FontFamily, fontDisplayNames } from '../../contexts/FontContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useCommonStyles } from '../../hooks/useCommonStyles';
+import { useAndroidFixes } from '../../styles/androidFixes';
 
 export default function SettingsScreen() {
   const [fontSize, setFontSize] = useState(16);
@@ -24,6 +25,7 @@ export default function SettingsScreen() {
   const { fontFamily, setFontFamily } = useFont();
   const { language, setLanguage, t } = useLanguage();
   const { styles, staticStyles } = useCommonStyles();
+  const androidFixes = useAndroidFixes(theme);
 
   useEffect(() => {
     loadSettings();
@@ -164,17 +166,17 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={styles.container.main}>
       <View style={styles.header.container}>
-        <Text style={[styles.header.title, { textAlign: 'center', color: theme.colors.text }]}>Settings</Text>
+        <Text style={[styles.header.title, { color: theme.colors.text, textAlign: 'center' }]}>Settings</Text>
       </View>
 
       <ScrollView style={staticStyles.flex1} showsVerticalScrollIndicator={false}>
         <View style={styles.spacing.margin.bottomXl}>
-          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text }]}>Appearance</Text>
+          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>Appearance</Text>
           
           <SettingItem
             icon="moon"
             title={t('settings.darkMode')}
-            subtitle="Cambiar entre tema claro y oscuro"
+            subtitle={t('settings.darkModeDesc')}
           >
             <Switch
               value={isDarkMode}
@@ -215,7 +217,7 @@ export default function SettingsScreen() {
               style={[styles.layout.row, styles.spacing.padding.sm, { backgroundColor: theme.colors.surface, borderRadius: 8, borderWidth: 1, borderColor: theme.colors.border }]}
               onPress={showFontSelector}
             >
-              <Text style={[styles.text.caption, { color: theme.colors.primary, fontWeight: '500', marginRight: 4 }]}>{t('common.change')}</Text>
+              <Text style={[styles.text.caption, { color: theme.colors.primary, fontWeight: '500', marginRight: 4, textAlign: 'center' }]}>{t('common.change')}</Text>
               <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
             </TouchableOpacity>
           </SettingItem>
@@ -233,7 +235,7 @@ export default function SettingsScreen() {
               style={[styles.layout.row, styles.spacing.padding.sm, { backgroundColor: theme.colors.surface, borderRadius: 8, borderWidth: 1, borderColor: theme.colors.border }]}
               onPress={showLanguageSelector}
             >
-              <Text style={[styles.text.caption, { color: theme.colors.primary, fontWeight: '500', marginRight: 4 }]}>{t('common.change')}</Text>
+              <Text style={[styles.text.caption, { color: theme.colors.primary, fontWeight: '500', marginRight: 4, textAlign: 'center' }]}>{t('common.change')}</Text>
               <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
             </TouchableOpacity>
           </SettingItem>
@@ -287,11 +289,16 @@ export default function SettingsScreen() {
 
         <View style={styles.spacing.margin.bottomXl}>
           <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>About</Text>
-          <View style={[styles.card, { alignItems: 'center' }]}>
-            <Text style={[styles.text.heading, { color: theme.colors.primary, marginBottom: 4 }]}>LitForge</Text>
-            <Text style={[styles.text.body, { color: theme.colors.textSecondary, marginBottom: 12 }]}>Version 1.0.0</Text>
-            <Text style={[styles.text.caption, { textAlign: 'center', lineHeight: 20, color: theme.colors.text }]}>
-Your digital reading companion for PDF, DOCX and Markdown documents
+          <View style={[styles.card, { alignItems: 'center', paddingVertical: 20, paddingHorizontal: 16 }]}>
+            <Text style={[styles.text.heading, { color: theme.colors.primary, marginBottom: 8, textAlign: 'center' }]}>LitForge</Text>
+            <Text style={[styles.text.body, { color: theme.colors.textSecondary, marginBottom: 16, textAlign: 'center' }]}>Version 1.0.0</Text>
+            <Text style={[styles.text.caption, { 
+              textAlign: 'center', 
+              lineHeight: 18, 
+              color: theme.colors.text,
+              maxWidth: '90%'
+            }]}>
+              Your digital reading companion for PDF, DOCX and Markdown documents
             </Text>
           </View>
         </View>

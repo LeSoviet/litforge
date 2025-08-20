@@ -1,5 +1,5 @@
 // Typography styles
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { Theme } from '../types';
 import { FONT_SIZES, FONT_WEIGHTS } from './designTokens';
 
@@ -113,14 +113,14 @@ export const createTextStyles = (theme: Theme) => {
     
     // Texto de error
     errorText: {
-      color: theme.colors.error || '#FF3B30',
+      color: theme.colors.error,
       fontSize: FONT_SIZES.sm,
       fontWeight: FONT_WEIGHTS.normal,
     },
     
     // Texto de éxito
     successText: {
-      color: theme.colors.success || '#34C759',
+      color: theme.colors.success,
       fontSize: FONT_SIZES.sm,
       fontWeight: FONT_WEIGHTS.normal,
     },
@@ -128,6 +128,10 @@ export const createTextStyles = (theme: Theme) => {
     // Texto centrado
     textCenter: {
       textAlign: 'center',
+      ...(Platform.OS === 'android' && {
+        textAlignVertical: 'center',
+        includeFontPadding: false,
+      }),
     },
     
     // Texto alineado a la derecha
@@ -151,12 +155,20 @@ export const createTextStyles = (theme: Theme) => {
         fontWeight: FONT_WEIGHTS.bold,
         color: theme.colors.text,
         textAlign: 'center',
+        ...(Platform.OS === 'android' && {
+          textAlignVertical: 'center',
+          includeFontPadding: false,
+        }),
       },
       subtitle: {
         fontSize: FONT_SIZES.md,
         fontWeight: FONT_WEIGHTS.normal,
         color: theme.colors.textSecondary,
         textAlign: 'center',
+        ...(Platform.OS === 'android' && {
+          textAlignVertical: 'center',
+          includeFontPadding: false,
+        }),
       },
     } as any,
   });

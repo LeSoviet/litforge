@@ -42,7 +42,7 @@ export default function TabLayout() {
         options={{
           title: t('nav.donate'),
           tabBarIcon: () => (
-            <IconSymbol size={26} name="heart.fill" color="#FF0000" />
+            <IconSymbol size={26} name="heart.fill" color={theme.colors.error} />
           ),
         }}
       />

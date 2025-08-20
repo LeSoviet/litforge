@@ -1,10 +1,10 @@
 import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
+// Removed unused SplashScreen import
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+// Removed unused useEffect import
+import { View, StyleSheet, Platform } from 'react-native';
 import 'react-native-reanimated';
 
 import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
@@ -48,7 +48,11 @@ function AppContent() {
             }} 
           />
         </Stack>
-        <StatusBar style={isDarkMode ? 'light' : 'dark'} />
+        <StatusBar 
+          style={isDarkMode ? 'light' : 'dark'} 
+          backgroundColor={Platform.OS === 'android' ? theme.colors.background : undefined}
+          translucent={Platform.OS === 'android' ? false : undefined}
+        />
       </NavigationThemeProvider>
     </View>
   );

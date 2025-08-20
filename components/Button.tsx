@@ -9,7 +9,7 @@ import {
   TextStyle,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, getTheme, shadows } from '../theme/colors';
+import { getTheme, shadows } from '../theme/colors';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'small' | 'medium' | 'large';
@@ -43,6 +43,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   const colorScheme = useColorScheme();
   const theme = getTheme(colorScheme === 'dark');
+  const onFilledForeground = theme.dark ? theme.colors.text : theme.colors.card;
 
   // Get button styles based on variant
   const getButtonStyles = (): ViewStyle => {
@@ -98,7 +99,7 @@ const Button: React.FC<ButtonProps> = ({
       case 'primary':
         return {
           ...baseStyle,
-          color: disabled ? theme.colors.textSecondary : '#ffffff',
+          color: disabled ? theme.colors.textSecondary : onFilledForeground,
         };
       case 'secondary':
         return {
@@ -118,7 +119,7 @@ const Button: React.FC<ButtonProps> = ({
       case 'danger':
         return {
           ...baseStyle,
-          color: disabled ? theme.colors.textSecondary : '#ffffff',
+          color: disabled ? theme.colors.textSecondary : onFilledForeground,
         };
       default:
         return baseStyle;
@@ -174,7 +175,7 @@ const Button: React.FC<ButtonProps> = ({
     switch (variant) {
       case 'primary':
       case 'danger':
-        return disabled ? theme.colors.textSecondary : '#ffffff';
+        return disabled ? theme.colors.textSecondary : onFilledForeground;
       case 'secondary':
         return disabled ? theme.colors.textSecondary : theme.colors.text;
       case 'outline':

@@ -2,9 +2,26 @@
 
 Todas las mejoras y cambios notables de este proyecto serán documentados en este archivo.
 
+## [Unreleased]
+
+### Fixed - 2025-08-20
+- Affected files: components/Button.tsx
+- Replaced hardcoded white ('#ffffff') for button text and icons with theme-aware tokens (card for light theme, text for dark theme) to ensure consistency and better contrast.
+
+
+### Fixed - 2025-01-20
+- **Android Dark Mode Inconsistencies**: Implemented comprehensive fixes for Android-specific dark mode issues
+  - Added `styles/androidFixes.ts` with platform-specific text centering and UI corrections
+  - Updated `theme/colors.ts` with improved contrast colors for dark mode (#0F0F0F background, #FFFFFF text)
+  - Enhanced `StatusBar` configuration in `app/_layout.tsx` with Android-specific background colors
+  - Applied centering fixes to `styles/componentStyles.ts`, `styles/textStyles.ts`, `app/(tabs)/explore.tsx`, and `screens/SettingsScreen.tsx`
+  - Added `textAlignVertical: 'center'` and `includeFontPadding: false` for proper text alignment on Android
+  - Created documentation in `docs/android-dark-mode-fixes.md` explaining all implemented solutions
+
 ## [2025-01-20] - Refactorización completa del sistema de estilos
 
-### Archivos afectados
+### Affected files: app/_layout.tsx, app/(tabs)/_layout.tsx, theme/colors.ts, services/SettingsService.ts, screens/SettingsScreen.tsx
+- Summary: Adjusted dark mode colors to a softer Deep Blue palette; aligned StatusBar backgroundColor with theme; replaced hardcoded colors (#FF0000, #3B82F6) with theme tokens; fixed Settings layout (About section alignment, Change button styling, centered font size display); removed unused imports.
 - `styles/commonStyles.ts` - Sistema de estilos centralizados creado
 - `hooks/useCommonStyles.ts` - Hook para memoización de estilos implementado
 - `app/(tabs)/index.tsx` - Refactorizado para usar estilos centralizados
