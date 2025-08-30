@@ -8,7 +8,6 @@ Una aplicación completa de lectura de documentos construida con React Native y 
 - **PDF nativo**: Visualización fluida con `react-native-pdf`
 - **Markdown completo**: Renderizado con sintaxis resaltada usando `@cosmicmedia/react-native-markdown-display`
 - **Importación fácil**: Selecciona archivos directamente desde tu dispositivo
-- **Escaneo OCR**: Convierte documentos físicos en texto digital
 
 ### 🎯 Funciones de lectura
 - **Marcadores inteligentes**: Guarda tus páginas favoritas
@@ -64,6 +63,10 @@ npm start
 - **Añadir nota**: Toca el ícono de nota y escribe tu comentario
 - **Ver marcadores**: Accede desde el menú de navegación
 
+### Historias de ejemplo
+- Explora una colección curada de historias fascinantes de la historia mundial
+- Accede a través de la pestaña "Historias" en la navegación inferior
+
 ### Configuración
 - Accede a la pestaña "Explorar" para:
   - Cambiar tema (oscuro/claro)
@@ -78,7 +81,8 @@ litforge/
 ├── app/                          # Pantallas principales
 │   ├── (tabs)/
 │   │   ├── index.tsx            # Biblioteca de documentos
-│   │   └── explore.tsx          # Configuraciones
+│   │   ├── explore.tsx          # Configuraciones
+│   │   └── stories.tsx          # Historias de ejemplo
 │   └── reader.tsx               # Lector de documentos
 ├── components/                   # Componentes reutilizables
 │   ├── ThemedText.tsx
@@ -140,6 +144,7 @@ npm run build         # Construye para producción
 - ✅ Tema oscuro/claro
 - ✅ Gestión completa de documentos
 - ✅ Scroll en página de configuraciones
+- ✅ Colección de historias de ejemplo
 
 ## 🔮 Próximas mejoras
 
@@ -151,13 +156,13 @@ npm run build         # Construye para producción
 - [ ] Soporte para más formatos (EPUB, DOCX)
 - [ ] Compartir documentos y notas
 - [ ] Modo de lectura nocturna avanzado
-- [ ] Escaneo OCR de múltiples páginas
 
 ## 🐛 Problemas resueltos recientemente
 
 - ✅ Corregidas advertencias de StatusBar en Android
 - ✅ Solucionados errores de eliminación de archivos
 - ✅ Mejorada la estabilidad general de la aplicación
+- ✅ Eliminada funcionalidad OCR problemática
 
 ## 🤝 Contribución
 

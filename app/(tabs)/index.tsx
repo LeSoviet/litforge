@@ -102,7 +102,7 @@ export default function LibraryScreen() {
       
       const sampleDocs: Document[] = [
         {
-          id: '1',
+          id: 'sample_1',
           title: 'Guía de React Native',
           size: 2048000,
           createdAt: new Date(Date.now() - 86400000).toISOString(),
@@ -161,7 +161,7 @@ export default function LibraryScreen() {
         });
 
         const document: Document = {
-          id: Date.now().toString(),
+          id: `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           title: fileName,
           size: file.size || 0,
           createdAt: new Date().toISOString(),
@@ -186,10 +186,7 @@ export default function LibraryScreen() {
     }
   };
 
-  // New function for OCR scanning
-  const startOcrScan = () => {
-    router.push('/ocr-scanner');
-  };
+
 
   const getDocumentType = (mimeType: string, fileName: string): Document['type'] => {
     if (mimeType.includes('pdf') || fileName.toLowerCase().endsWith('.pdf')) return 'pdf';
@@ -337,13 +334,7 @@ export default function LibraryScreen() {
           )}
         </TouchableOpacity>
         
-        <TouchableOpacity
-          style={[styles.button.primary, { backgroundColor: theme.colors.secondary }]}
-          onPress={startOcrScan}
-        >
-          <Ionicons name="camera" size={20} color={theme.colors.background} />
-          <Text style={styles.button.primaryText}>{t('library.scan')}</Text>
-        </TouchableOpacity>
+
       </View>
     </View>
   );
@@ -376,12 +367,6 @@ export default function LibraryScreen() {
             onPress={() => setShowFilters(!showFilters)}
           >
             <Ionicons name="options" size={24} color={theme.colors.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button.icon, styles.spacing.margin.rightMd]}
-            onPress={startOcrScan}
-          >
-            <Ionicons name="camera" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button.icon}

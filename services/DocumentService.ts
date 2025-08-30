@@ -5,10 +5,10 @@ import { Document } from '../types/Document';
 import { BookmarkService } from './BookmarkService';
 import { DocumentContentService } from './DocumentContentService';
 import {
-  generateId,
-  getDocumentType,
-  getFileExtension,
-  getFilenameFromUri,
+    generateId,
+    getDocumentType,
+    getFileExtension,
+    getFilenameFromUri,
 } from './FileUtilsService';
 import { NoteService } from './NoteService';
 import { SettingsService } from './SettingsService';
@@ -424,52 +424,4 @@ export class DocumentService {
     }
   }
 
-  // OCR Integration Methods
-  /**
-   * Create a document from OCR extracted text
-   * This method will be used when implementing OCR functionality
-   * @param text - Extracted text from OCR processing
-   * @param title - Title for the new document (optional)
-   * @returns Promise resolving to the created Document
-   */
-  static async createDocumentFromOcrText(text: string, title?: string): Promise<Document> {
-    try {
-      // Generate a unique filename for the OCR document
-      const filename = `ocr_${generateId()}.md`;
-      const destinationUri = `${FileSystem.documentDirectory}${filename}`;
-      
-      // Write the text content to a file
-      await FileSystem.writeAsStringAsync(destinationUri, text);
-      
-      // Get file info for size
-      const fileInfo = await FileSystem.getInfoAsync(destinationUri);
-      
-      // Create document object
-      const document: Document = {
-        id: generateId(),
-        title: title || `OCR Document ${new Date().toLocaleDateString()}`,
-        uri: destinationUri,
-        filePath: destinationUri,
-        type: 'md', // OCR results will be saved as markdown
-        size: (fileInfo as any).exists ? (fileInfo as any).size : text.length,
-        createdAt: new Date().toISOString(),
-        dateAdded: new Date(),
-        progress: 0,
-        totalPages: Math.max(1, Math.ceil(text.length / 2000)), // Rough estimate
-        bookmarks: [],
-        notes: [],
-        content: text, // Store the actual content for quick access
-      };
-
-      // Save to documents list
-      const documents = await this.getAllDocuments();
-      documents.push(document);
-      await AsyncStorage.setItem(STORAGE_KEYS.DOCUMENTS, JSON.stringify(documents));
-
-      return document;
-    } catch (error) {
-      console.error('Error creating document from OCR text:', error);
-      throw error;
-    }
-  }
 }

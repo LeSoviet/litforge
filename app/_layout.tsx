@@ -47,21 +47,6 @@ function AppContent() {
               presentation: 'modal'
             }} 
           />
-          <Stack.Screen 
-            name="ocr-scanner" 
-            options={{ 
-              headerShown: true,
-              title: 'Scan Document',
-              headerStyle: {
-                backgroundColor: theme.colors.background,
-              },
-              headerTintColor: theme.colors.primary,
-              headerTitleStyle: {
-                color: theme.colors.text,
-              },
-              presentation: 'modal'
-            }} 
-          />
         </Stack>
         <StatusBar 
           style={isDarkMode ? 'light' : 'dark'}

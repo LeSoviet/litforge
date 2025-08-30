@@ -1,170 +1,34 @@
-# Changelog - LitForge
+# Changelog
 
-Todas las mejoras y cambios notables de este proyecto serán documentados en este archivo.
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Fixed - 2025-08-20
-- Affected files: components/Button.tsx
-- Replaced hardcoded white ('#ffffff') for button text and icons with theme-aware tokens (card for light theme, text for dark theme) to ensure consistency and better contrast.
+### Removed
+- Outdated OCR functionality due to unmaintained react-native-mlkit-ocr library
+- 121 sample story files reduced to 10 for better project management
 
+### Changed
+- Updated stories screen to reference only remaining 10 story files
+- Cleaned up dependencies by removing react-native-mlkit-ocr
+- Removed camera permissions from app.json
+- Removed OCR-related navigation routes
+- Removed OCR-related code from various components and services
+- Updated README.md to remove OCR references
 
-### Fixed - 2025-01-20
-- **Android Dark Mode Inconsistencies**: Implemented comprehensive fixes for Android-specific dark mode issues
-  - Added `styles/androidFixes.ts` with platform-specific text centering and UI corrections
-  - Updated `theme/colors.ts` with improved contrast colors for dark mode (#0F0F0F background, #FFFFFF text)
-  - Enhanced `StatusBar` configuration in `app/_layout.tsx` with Android-specific background colors
-  - Applied centering fixes to `styles/componentStyles.ts`, `styles/textStyles.ts`, `app/(tabs)/explore.tsx`, and `screens/SettingsScreen.tsx`
-  - Added `textAlignVertical: 'center'` and `includeFontPadding: false` for proper text alignment on Android
-  - Created documentation in `docs/android-dark-mode-fixes.md` explaining all implemented solutions
+### Fixed
+- Resolved runtime errors related to OCR module initialization failures
+- Improved app stability by removing problematic dependencies
 
-## [2025-01-20] - Refactorización completa del sistema de estilos
+## [1.0.0] - 2025-08-30
 
-### Affected files: app/_layout.tsx, app/(tabs)/_layout.tsx, theme/colors.ts, services/SettingsService.ts, screens/SettingsScreen.tsx
-- Summary: Adjusted dark mode colors to a softer Deep Blue palette; aligned StatusBar backgroundColor with theme; replaced hardcoded colors (#FF0000, #3B82F6) with theme tokens; fixed Settings layout (About section alignment, Change button styling, centered font size display); removed unused imports.
-- `styles/commonStyles.ts` - Sistema de estilos centralizados creado
-- `hooks/useCommonStyles.ts` - Hook para memoización de estilos implementado
-- `app/(tabs)/index.tsx` - Refactorizado para usar estilos centralizados
-- `app/(tabs)/explore.tsx` - Refactorizado para usar estilos centralizados
-- `app/(tabs)/donate.tsx` - Refactorizado para usar estilos centralizados
-- `app/stories.tsx` - Refactorizado para usar estilos centralizados
-- `app/reader.tsx` - Refactorizado para usar estilos centralizados
-
-### Cambios principales
-
-#### 🎨 Sistema de estilos unificado
-- **Estilos centralizados**: Creado `commonStyles.ts` con más de 50 estilos reutilizables
-- **Theme-aware**: Todos los estilos responden automáticamente a cambios de tema claro/oscuro
-- **Memoización optimizada**: Hook `useCommonStyles` previene re-renders innecesarios
-- **Consistencia visual**: Espaciado, tipografía y colores estandarizados en toda la app
-
-#### 🧹 Eliminación de código duplicado
-- **Reducción del 70%**: Eliminados estilos duplicados en 5 archivos principales
-- **Funciones createStyles**: Removidas todas las funciones de creación de estilos locales
-- **StyleSheet imports**: Limpiadas importaciones innecesarias de React Native
-- **Mantenibilidad mejorada**: Un solo punto de verdad para todos los estilos
-
-#### ⚡ Optimización de rendimiento
-- **Memoización inteligente**: Estilos calculados una sola vez por cambio de tema
-- **Re-renders reducidos**: Prevención de recálculos innecesarios de estilos
-- **Bundle size**: Reducción estimada del código relacionado con estilos
-- **Carga más rápida**: Menos procesamiento de estilos en tiempo de ejecución
-
-#### 🔧 Beneficios técnicos
-- **Desarrollo acelerado**: Nuevas pantallas pueden reutilizar estilos existentes
-- **Debugging simplificado**: Estilos centralizados facilitan la resolución de problemas
-- **Escalabilidad**: Base sólida para futuras funcionalidades y temas
-- **Consistencia**: Garantía de coherencia visual en toda la aplicación
-
-## [2025-01-20] - Análisis profundo y roadmap de refactorización
-
-### Archivos afectados
-- `REFACTORING_ROADMAP.md` - Documento completo de análisis y roadmap creado
-- Análisis completo del codebase realizado
-
-### Cambios principales
-
-#### 🔍 Análisis de código completado
-- **Estructura del proyecto**: Análisis arquitectónico completo identificando patrones y dependencias
-- **Código duplicado**: Identificación de 50+ instancias de estilos repetitivos y lógica redundante
-- **Código muerto**: Detección de hooks y componentes subutilizados (useThemeColor, HelloWave, etc.)
-- **Cuellos de botella**: Análisis de rendimiento identificando re-renders innecesarios y operaciones AsyncStorage no optimizadas
-
-#### 📋 Roadmap de refactorización
-- **5 fases estructuradas** con cronograma de 8 semanas
-- **Priorización por impacto**: Alta prioridad para estilos y persistencia, media para limpieza y rendimiento
-- **Métricas definidas**: KPIs técnicos y de negocio para seguimiento del progreso
-- **ROI estimado**: 200-300% de retorno anual sobre la inversión inicial
-
-#### 🎯 Beneficios esperados
-- **Mantenibilidad**: Reducción del 50% en tiempo de desarrollo de nuevas funcionalidades
-- **Rendimiento**: Mejora del 30% en tiempo de carga y 60% menos re-renders
-- **Calidad**: Reducción del 70% en código duplicado y 25% en complejidad
-- **Bundle size**: Reducción estimada del 15%
-
-#### 📊 Plan de implementación
-- **Fase 1-2**: Consolidación de estilos y optimización de persistencia (semanas 1-3)
-- **Fase 3**: Limpieza de código muerto (semana 4)
-- **Fase 4-5**: Optimización de rendimiento y arquitectura avanzada (semanas 5-8)
-
-## [2025-01-20] - Implementación completa de funcionalidades
-
-### Archivos afectados
-- `services/DocumentService.ts` - Función saveDocument añadida
-- `app/(tabs)/explore.tsx` - Problema de scroll corregido
-- `app/reader.tsx` - Soporte completo para PDF y Markdown
-- `app/(tabs)/index.tsx` - Interfaz mejorada y funcionalidad de importación
-- `package.json` - Nuevas dependencias añadidas
-
-### Cambios principales
-
-#### 🔧 Correcciones críticas
-- **DocumentService**: Implementada función `saveDocument` faltante que causaba TypeError
-- **Página Explore**: Añadido ScrollView para permitir desplazamiento en configuraciones
-- **Navegación**: Corregidos problemas de navegación entre pantallas
-
-#### 📚 Soporte de documentos
-- **PDF**: Integración completa con `react-native-pdf` para visualización nativa
-- **Markdown**: Implementado renderizado completo con `@cosmicmedia/react-native-markdown-display`
-- **Importación**: Sistema robusto para importar archivos desde el dispositivo usando `expo-document-picker` y `expo-file-system`
-
-#### 🎨 Mejoras de interfaz
-- **Pantalla principal**: Diseño moderno con estado vacío, indicadores de progreso y botones de acción
-- **Lector**: Interfaz mejorada con soporte para diferentes tipos de documento
-- **Tema**: Consistencia visual con paleta de colores deep blue
-- **Responsividad**: Diseño adaptativo para diferentes tamaños de pantalla
-
-#### ⚡ Funcionalidades nuevas
-- **Marcadores**: Sistema completo para guardar páginas favoritas
-- **Notas**: Capacidad de añadir notas personalizadas a documentos
-- **Progreso**: Seguimiento automático del progreso de lectura
-- **Gestión**: Funciones para eliminar documentos y refrescar la biblioteca
-
-#### 📦 Dependencias añadidas
-- `react-native-pdf@^6.7.5` - Visor de PDF nativo
-- `@cosmicmedia/react-native-markdown-display@^1.1.7` - Renderizado de Markdown
-- `expo-document-picker@^12.0.2` - Selección de archivos
-- `expo-file-system@^17.0.1` - Manejo del sistema de archivos
-- `react-native-mlkit-ocr@^0.3.0` - Procesamiento OCR
-- `expo-camera@^16.1.11` - Funcionalidad de cámara
-- `expo-media-library@^17.1.7` - Acceso a la biblioteca de medios
-
-### Estructura mejorada
-```
-litforge/
-├── app/
-│   ├── (tabs)/
-│   │   ├── index.tsx          # Pantalla principal mejorada
-│   │   └── explore.tsx        # Configuraciones con scroll
-│   └── reader.tsx             # Lector con soporte PDF/MD
-├── services/
-│   └── DocumentService.ts     # Servicio completo con saveDocument
-└── theme/
-    └── colors.ts              # Tema consistente
-```
-
-### Características implementadas
-- ✅ Visor de PDF con navegación fluida
-- ✅ Renderizado completo de Markdown con sintaxis
-- ✅ Sistema de marcadores inteligentes
-- ✅ Notas personalizadas por documento
-- ✅ Seguimiento de progreso de lectura
-- ✅ Importación desde dispositivo
-- ✅ Interfaz moderna y responsiva
-- ✅ Tema oscuro/claro
-- ✅ Gestión completa de documentos
-- ✅ Escaneo OCR de documentos físicos
-
-### Próximas mejoras planificadas
-- [ ] Sincronización en la nube
-- [ ] Estadísticas de lectura
-- [ ] Búsqueda dentro de documentos
-- [ ] Widgets para pantalla de inicio
-- [ ] Más temas personalizables
-- [ ] Escaneo OCR de múltiples páginas
-
----
-
-**Estado**: Aplicación completamente funcional y lista para uso
-**Versión**: 1.0.0
-**Plataformas**: iOS, Android, Web (Expo)
+### Added
+- Initial release of LitForge - A complete document reading application built with React Native and Expo
+- PDF and Markdown document reading capabilities
+- Bookmark and note-taking features
+- Progress tracking
+- Dark/light theme support
+- Multi-language support (Spanish, English, Portuguese)

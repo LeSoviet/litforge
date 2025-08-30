@@ -25,7 +25,6 @@ const translations = {
     'library.empty.title': '¡Comienza tu biblioteca!',
     'library.empty.subtitle': 'Importa documentos PDF o Markdown para comenzar tu experiencia de lectura personalizada.',
     'library.import': 'Importar Documento',
-    'library.scan': 'Escanear Documento',
     'library.filter.all': 'Todos',
     'library.filter.pdf': 'PDF',
     'library.filter.md': 'Markdown',
@@ -74,21 +73,6 @@ const translations = {
     'settings.clearData': 'Borrar todos los datos',
     'settings.clearDataDesc': 'Eliminar documentos y configuraciones',
     
-    // OCR Scanner
-    'ocr.scanner.title': 'Escanear Documento',
-    'ocr.scanner.camera_placeholder': 'Vista previa de la cámara',
-    'ocr.scanner.capture': 'Capturar',
-    'ocr.scanner.retake': 'Volver a capturar',
-    'ocr.scanner.save': 'Guardar Documento',
-    'ocr.result.title': 'Resultado del Escaneo',
-    'ocr.result.edit': 'Editar Texto',
-    'ocr.result.save': 'Guardar como Documento',
-    'ocr.permission.requesting': 'Solicitando permisos de cámara...',
-    'ocr.permission.denied': 'Se requieren permisos de cámara y biblioteca de medios para la funcionalidad OCR.',
-    'ocr.error.title': 'Error de OCR',
-    'ocr.error.processing': 'Error al procesar la imagen. Por favor, inténtelo de nuevo.',
-    'ocr.error.saving': 'Error al guardar el documento. Por favor, inténtelo de nuevo.',
-    
     // Languages
     'language.spanish': 'Español',
     'language.english': 'Inglés',
@@ -116,7 +100,6 @@ const translations = {
     'library.empty.title': 'Start your library!',
     'library.empty.subtitle': 'Import PDF or Markdown documents to begin your personalized reading experience.',
     'library.import': 'Import Document',
-    'library.scan': 'Scan Document',
     'library.filter.all': 'All',
     'library.filter.pdf': 'PDF',
     'library.filter.md': 'Markdown',
@@ -165,21 +148,6 @@ const translations = {
     'settings.clearData': 'Clear all data',
     'settings.clearDataDesc': 'Delete documents and settings',
     
-    // OCR Scanner
-    'ocr.scanner.title': 'Scan Document',
-    'ocr.scanner.camera_placeholder': 'Camera Preview',
-    'ocr.scanner.capture': 'Capture',
-    'ocr.scanner.retake': 'Retake',
-    'ocr.scanner.save': 'Save Document',
-    'ocr.result.title': 'Scan Result',
-    'ocr.result.edit': 'Edit Text',
-    'ocr.result.save': 'Save as Document',
-    'ocr.permission.requesting': 'Requesting camera permissions...',
-    'ocr.permission.denied': 'Camera and media library permissions are required for OCR functionality.',
-    'ocr.error.title': 'OCR Error',
-    'ocr.error.processing': 'Failed to process image. Please try again.',
-    'ocr.error.saving': 'Failed to save document. Please try again.',
-    
     // Languages
     'language.spanish': 'Spanish',
     'language.english': 'English',
@@ -207,7 +175,6 @@ const translations = {
     'library.empty.title': 'Comece sua biblioteca!',
     'library.empty.subtitle': 'Importe documentos PDF ou Markdown para começar sua experiência de leitura personalizada.',
     'library.import': 'Importar Documento',
-    'library.scan': 'Escanear Documento',
     'library.filter.all': 'Todos',
     'library.filter.pdf': 'PDF',
     'library.filter.md': 'Markdown',
@@ -255,21 +222,6 @@ const translations = {
     'settings.about': 'Sobre',
     'settings.clearData': 'Limpar todos os dados',
     'settings.clearDataDesc': 'Excluir documentos e configurações',
-    
-    // OCR Scanner
-    'ocr.scanner.title': 'Escanear Documento',
-    'ocr.scanner.camera_placeholder': 'Visualização da Câmera',
-    'ocr.scanner.capture': 'Capturar',
-    'ocr.scanner.retake': 'Repetir Captura',
-    'ocr.scanner.save': 'Salvar Documento',
-    'ocr.result.title': 'Resultado do Escaneamento',
-    'ocr.result.edit': 'Editar Texto',
-    'ocr.result.save': 'Salvar como Documento',
-    'ocr.permission.requesting': 'Solicitando permissões da câmera...',
-    'ocr.permission.denied': 'Permissões de câmera e biblioteca de mídia são necessárias para a funcionalidade OCR.',
-    'ocr.error.title': 'Erro de OCR',
-    'ocr.error.processing': 'Falha ao processar a imagem. Por favor, tente novamente.',
-    'ocr.error.saving': 'Falha ao salvar o documento. Por favor, tente novamente.',
     
     // Languages
     'language.spanish': 'Espanhol',

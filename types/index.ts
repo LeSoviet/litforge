@@ -18,9 +18,6 @@ export * from './NavigationTypes';
 // Data import/export types
 export * from './DataTypes';
 
-// OCR types
-export * from './OcrTypes';
-
 // Legacy compatibility - re-export everything from the original Document.ts
 // This ensures existing imports continue to work during the transition
 export * from './Document';
