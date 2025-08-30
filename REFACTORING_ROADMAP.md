@@ -320,6 +320,20 @@ Semana 7-8: FASE 5 (Arquitectura)
 - **Break-even**: 4-6 meses
 - **Beneficio neto anual**: 200-300% de la inversión inicial
 
+## 7. Future Enhancements
+
+### 7.1 OCR Scanning Feature
+- **Description**: Add optical character recognition functionality to allow users to scan physical documents and convert them to digital text
+- **Priority**: HIGH
+- **Complexity**: MEDIUM-HIGH
+- **Impact**: HIGH
+- **Dependencies**: 
+  - Camera permissions and integration
+  - OCR library integration (expo-ocr, react-native-mlkit-ocr, or expo-text-extractor)
+  - Document processing pipeline enhancements
+- **Implementation Plan**: See [OCR_FEATURE_ROADMAP.md](file:///c:/Users/TeamOS/Desktop/Projects/Litforge/OCR_FEATURE_ROADMAP.md) for detailed implementation steps
+- **Estimated Effort**: 5 weeks
+
 ---
 
 *Documento generado el: 2024-01-20*  

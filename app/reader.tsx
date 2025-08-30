@@ -1,24 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import Markdown from '@cosmicmedia/react-native-markdown-display';
+import { Ionicons } from '@expo/vector-icons';
+import * as FileSystem from 'expo-file-system';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
   Alert,
   Modal,
-  TextInput,
   ScrollView,
-  Dimensions,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { WebView } from 'react-native-webview';
-import Markdown from 'react-native-markdown-display';
-import { DocumentService } from '../services/DocumentService';
-import { Document, Note, Bookmark } from '../types/Document';
-import * as FileSystem from 'expo-file-system';
 import { useTheme } from '../contexts/ThemeContext';
 import { useCommonStyles } from '../hooks/useCommonStyles';
+import { DocumentService } from '../services/DocumentService';
+import { Bookmark, Document, Note } from '../types/Document';
 
 function ReaderScreen() {
   const [document, setDocument] = useState<Document | null>(null);
@@ -70,12 +68,12 @@ function ReaderScreen() {
         await loadDocumentContent(doc);
       } else {
         Alert.alert('Error', 'Documento no encontrado');
-        router.back();
+        router.push('/');
       }
     } catch (error) {
       console.error('Error loading document:', error);
       Alert.alert('Error', 'No se pudo cargar el documento');
-      router.back();
+      router.push('/');
     } finally {
       setLoading(false);
     }
@@ -300,7 +298,7 @@ const loadDocument = async (id: string) => {
   };
 
   const goBack = () => {
-    router.back();
+    router.push('/');
   };
 
   const isBookmarked = bookmarks.some(b => b.page === currentPage);

@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Alert,
-  RefreshControl,
-  ActivityIndicator,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
+import {
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    RefreshControl,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useCommonStyles } from '../../hooks/useCommonStyles';
 import { DocumentService } from '../../services/DocumentService';
 import { Document } from '../../types/Document';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { useCommonStyles } from '../../hooks/useCommonStyles';
 
 export default function LibraryScreen() {
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -186,6 +186,11 @@ export default function LibraryScreen() {
     }
   };
 
+  // New function for OCR scanning
+  const startOcrScan = () => {
+    router.push('/ocr-scanner');
+  };
+
   const getDocumentType = (mimeType: string, fileName: string): Document['type'] => {
     if (mimeType.includes('pdf') || fileName.toLowerCase().endsWith('.pdf')) return 'pdf';
     if (mimeType.includes('word') || mimeType.includes('officedocument') || fileName.toLowerCase().endsWith('.docx')) return 'docx';
@@ -316,20 +321,30 @@ export default function LibraryScreen() {
       <Text style={styles.emptyState.subtitle}>
         {t('library.empty.subtitle')}
       </Text>
-      <TouchableOpacity
-        style={styles.button.primary}
-        onPress={pickDocument}
-        disabled={importing}
-      >
-        {importing ? (
-          <ActivityIndicator size="small" color={theme.colors.background} />
-        ) : (
-          <>
-            <Ionicons name="add" size={20} color={theme.colors.background} />
-            <Text style={styles.button.primaryText}>{t('library.import')}</Text>
-          </>
-        )}
-      </TouchableOpacity>
+      <View style={styles.layout.row}>
+        <TouchableOpacity
+          style={[styles.button.primary, { marginRight: 12 }]}
+          onPress={pickDocument}
+          disabled={importing}
+        >
+          {importing ? (
+            <ActivityIndicator size="small" color={theme.colors.background} />
+          ) : (
+            <>
+              <Ionicons name="folder-open" size={20} color={theme.colors.background} />
+              <Text style={styles.button.primaryText}>{t('library.import')}</Text>
+            </>
+          )}
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.button.primary, { backgroundColor: theme.colors.secondary }]}
+          onPress={startOcrScan}
+        >
+          <Ionicons name="camera" size={20} color={theme.colors.background} />
+          <Text style={styles.button.primaryText}>{t('library.scan')}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -361,6 +376,12 @@ export default function LibraryScreen() {
             onPress={() => setShowFilters(!showFilters)}
           >
             <Ionicons name="options" size={24} color={theme.colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button.icon, styles.spacing.margin.rightMd]}
+            onPress={startOcrScan}
+          >
+            <Ionicons name="camera" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button.icon}

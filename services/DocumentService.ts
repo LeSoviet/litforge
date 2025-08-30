@@ -1,18 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
-import * as DocumentPicker from 'expo-document-picker';
-import { Document } from '../types/Document';
 import { ExportData } from '../types/DataTypes';
+import { Document } from '../types/Document';
 import { BookmarkService } from './BookmarkService';
-import { NoteService } from './NoteService';
 import { DocumentContentService } from './DocumentContentService';
-import { SettingsService } from './SettingsService';
 import {
   generateId,
-  getFileExtension,
   getDocumentType,
+  getFileExtension,
   getFilenameFromUri,
 } from './FileUtilsService';
+import { NoteService } from './NoteService';
+import { SettingsService } from './SettingsService';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -99,11 +98,16 @@ export class DocumentService {
       const document = documents.find(doc => doc.id === documentId);
       
       if (document) {
-        // Remove file from filesystem
-        try {
-          await FileSystem.deleteAsync(document.uri);
-        } catch (fileError) {
-          console.warn('Could not delete file:', fileError);
+        // Remove file from filesystem only if URI exists and is valid
+        if (document.uri && document.uri.length > 0) {
+          try {
+            const fileInfo = await FileSystem.getInfoAsync(document.uri);
+            if (fileInfo.exists) {
+              await FileSystem.deleteAsync(document.uri, { idempotent: true });
+            }
+          } catch (fileError) {
+            console.warn(`Could not delete file ${document.uri}:`, fileError);
+          }
         }
         
         // Remove from documents list
@@ -159,12 +163,6 @@ export class DocumentService {
       return null;
     }
   }
-
-
-
-
-
-
 
   // Convenience methods that proxy to the new services
   // These maintain compatibility with existing code
@@ -245,14 +243,14 @@ export class DocumentService {
       await NoteService.clearAllNotes();
       
       // Also clear the documents directory
-      const documentsDir = FileSystem.documentDirectory + 'documents/';
+      const documentsDir = `${FileSystem.documentDirectory}documents/`;
       const dirInfo = await FileSystem.getInfoAsync(documentsDir);
-      if (dirInfo.exists) {
-        await FileSystem.deleteAsync(documentsDir);
+      if (dirInfo.exists && dirInfo.isDirectory) {
+        await FileSystem.deleteAsync(documentsDir, { idempotent: true });
       }
     } catch (error) {
       console.error('Error clearing all data:', error);
-      throw error;
+      // Don't throw error to prevent app crash, but log for debugging
     }
   }
 
@@ -422,6 +420,55 @@ export class DocumentService {
       return document;
     } catch (error) {
       console.error('Error adding story document from asset:', error);
+      throw error;
+    }
+  }
+
+  // OCR Integration Methods
+  /**
+   * Create a document from OCR extracted text
+   * This method will be used when implementing OCR functionality
+   * @param text - Extracted text from OCR processing
+   * @param title - Title for the new document (optional)
+   * @returns Promise resolving to the created Document
+   */
+  static async createDocumentFromOcrText(text: string, title?: string): Promise<Document> {
+    try {
+      // Generate a unique filename for the OCR document
+      const filename = `ocr_${generateId()}.md`;
+      const destinationUri = `${FileSystem.documentDirectory}${filename}`;
+      
+      // Write the text content to a file
+      await FileSystem.writeAsStringAsync(destinationUri, text);
+      
+      // Get file info for size
+      const fileInfo = await FileSystem.getInfoAsync(destinationUri);
+      
+      // Create document object
+      const document: Document = {
+        id: generateId(),
+        title: title || `OCR Document ${new Date().toLocaleDateString()}`,
+        uri: destinationUri,
+        filePath: destinationUri,
+        type: 'md', // OCR results will be saved as markdown
+        size: (fileInfo as any).exists ? (fileInfo as any).size : text.length,
+        createdAt: new Date().toISOString(),
+        dateAdded: new Date(),
+        progress: 0,
+        totalPages: Math.max(1, Math.ceil(text.length / 2000)), // Rough estimate
+        bookmarks: [],
+        notes: [],
+        content: text, // Store the actual content for quick access
+      };
+
+      // Save to documents list
+      const documents = await this.getAllDocuments();
+      documents.push(document);
+      await AsyncStorage.setItem(STORAGE_KEYS.DOCUMENTS, JSON.stringify(documents));
+
+      return document;
+    } catch (error) {
+      console.error('Error creating document from OCR text:', error);
       throw error;
     }
   }

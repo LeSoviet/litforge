@@ -105,7 +105,7 @@ Todas las mejoras y cambios notables de este proyecto serán documentados en est
 
 #### 📚 Soporte de documentos
 - **PDF**: Integración completa con `react-native-pdf` para visualización nativa
-- **Markdown**: Implementado renderizado completo con `react-native-markdown-display`
+- **Markdown**: Implementado renderizado completo con `@cosmicmedia/react-native-markdown-display`
 - **Importación**: Sistema robusto para importar archivos desde el dispositivo usando `expo-document-picker` y `expo-file-system`
 
 #### 🎨 Mejoras de interfaz
@@ -122,9 +122,12 @@ Todas las mejoras y cambios notables de este proyecto serán documentados en est
 
 #### 📦 Dependencias añadidas
 - `react-native-pdf@^6.7.5` - Visor de PDF nativo
-- `react-native-markdown-display@^7.0.2` - Renderizado de Markdown
+- `@cosmicmedia/react-native-markdown-display@^1.1.7` - Renderizado de Markdown
 - `expo-document-picker@^12.0.2` - Selección de archivos
 - `expo-file-system@^17.0.1` - Manejo del sistema de archivos
+- `react-native-mlkit-ocr@^0.3.0` - Procesamiento OCR
+- `expo-camera@^16.1.11` - Funcionalidad de cámara
+- `expo-media-library@^17.1.7` - Acceso a la biblioteca de medios
 
 ### Estructura mejorada
 ```
@@ -150,6 +153,7 @@ litforge/
 - ✅ Interfaz moderna y responsiva
 - ✅ Tema oscuro/claro
 - ✅ Gestión completa de documentos
+- ✅ Escaneo OCR de documentos físicos
 
 ### Próximas mejoras planificadas
 - [ ] Sincronización en la nube
@@ -157,6 +161,7 @@ litforge/
 - [ ] Búsqueda dentro de documentos
 - [ ] Widgets para pantalla de inicio
 - [ ] Más temas personalizables
+- [ ] Escaneo OCR de múltiples páginas
 
 ---
 

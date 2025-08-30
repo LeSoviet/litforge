@@ -4,12 +4,12 @@ import { Stack } from 'expo-router';
 // Removed unused SplashScreen import
 import { StatusBar } from 'expo-status-bar';
 // Removed unused useEffect import
-import { View, StyleSheet, Platform } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import 'react-native-reanimated';
 
-import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 import { FontProvider } from '../contexts/FontContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
+import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 
 function AppContent() {
   const { isDarkMode, theme, isLoading } = useTheme();
@@ -47,11 +47,24 @@ function AppContent() {
               presentation: 'modal'
             }} 
           />
+          <Stack.Screen 
+            name="ocr-scanner" 
+            options={{ 
+              headerShown: true,
+              title: 'Scan Document',
+              headerStyle: {
+                backgroundColor: theme.colors.background,
+              },
+              headerTintColor: theme.colors.primary,
+              headerTitleStyle: {
+                color: theme.colors.text,
+              },
+              presentation: 'modal'
+            }} 
+          />
         </Stack>
         <StatusBar 
-          style={isDarkMode ? 'light' : 'dark'} 
-          backgroundColor={Platform.OS === 'android' ? theme.colors.background : undefined}
-          translucent={Platform.OS === 'android' ? false : undefined}
+          style={isDarkMode ? 'light' : 'dark'}
         />
       </NavigationThemeProvider>
     </View>

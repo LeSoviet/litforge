@@ -6,8 +6,9 @@ Una aplicación completa de lectura de documentos construida con React Native y 
 
 ### 📖 Soporte de documentos
 - **PDF nativo**: Visualización fluida con `react-native-pdf`
-- **Markdown completo**: Renderizado con sintaxis resaltada usando `react-native-markdown-display`
+- **Markdown completo**: Renderizado con sintaxis resaltada usando `@cosmicmedia/react-native-markdown-display`
 - **Importación fácil**: Selecciona archivos directamente desde tu dispositivo
+- **Escaneo OCR**: Convierte documentos físicos en texto digital
 
 ### 🎯 Funciones de lectura
 - **Marcadores inteligentes**: Guarda tus páginas favoritas
@@ -31,7 +32,7 @@ Una aplicación completa de lectura de documentos construida con React Native y 
 
 ### Pasos de instalación
 
-```bash
+```
 # Clona el repositorio
 git clone <repository-url>
 cd litforge
@@ -104,7 +105,7 @@ litforge/
 
 ### Dependencias principales
 - `react-native-pdf`: Visor de PDF nativo
-- `react-native-markdown-display`: Renderizado de Markdown
+- `@cosmicmedia/react-native-markdown-display`: Renderizado de Markdown
 - `expo-document-picker`: Selección de archivos
 - `expo-file-system`: Manejo del sistema de archivos
 - `@react-native-async-storage/async-storage`: Almacenamiento local
@@ -150,6 +151,13 @@ npm run build         # Construye para producción
 - [ ] Soporte para más formatos (EPUB, DOCX)
 - [ ] Compartir documentos y notas
 - [ ] Modo de lectura nocturna avanzado
+- [ ] Escaneo OCR de múltiples páginas
+
+## 🐛 Problemas resueltos recientemente
+
+- ✅ Corregidas advertencias de StatusBar en Android
+- ✅ Solucionados errores de eliminación de archivos
+- ✅ Mejorada la estabilidad general de la aplicación
 
 ## 🤝 Contribución
 
