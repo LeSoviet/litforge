@@ -108,25 +108,25 @@ export const COLORS = {
  */
 export const LIGHT_THEME = {
   colors: {
-    primary: COLORS.primary,
-    primaryLight: COLORS.primaryLight,
-    primaryDark: COLORS.primaryDark,
+    primary: '#1e3a8a', // Deep blue
+    primaryLight: '#3b82f6', // Lighter blue
+    primaryDark: '#1e40af', // Darker blue
     secondary: COLORS.secondary,
-    background: COLORS.white,
-    surface: COLORS.gray100,
-    text: COLORS.black,
-    textSecondary: COLORS.gray600,
-    border: COLORS.gray300,
+    background: '#1e3a8a', // Deep blue background
+    surface: '#3b82f6', // Blue surface
+    text: COLORS.white, // White text for contrast
+    textSecondary: '#e5e7eb', // Light gray for secondary text
+    border: '#60a5fa', // Light blue border
     shadow: COLORS.black,
     success: COLORS.success,
     warning: COLORS.warning,
     error: COLORS.error,
     info: COLORS.info,
-    accent: COLORS.primary,
-    card: COLORS.white,
+    accent: '#1e3a8a', // Deep blue accent
+    card: '#3b82f6', // Blue cards
     notification: COLORS.error,
     // Reading experience
-    readerBackground: COLORS.white,
+    readerBackground: '#1e3a8a', // Deep blue reader background
     highlightYellow: '#fef3c7',
     highlightBlue: '#dbeafe',
     highlightGreen: '#d1fae5',
@@ -142,28 +142,28 @@ export const LIGHT_THEME = {
 
 export const DARK_THEME = {
   colors: {
-    primary: COLORS.primaryLight,
-    primaryLight: COLORS.primaryLight,
-    primaryDark: COLORS.primaryDark,
-    secondary: COLORS.secondaryLight,
-    background: COLORS.black,
-    surface: COLORS.gray900,
-    text: COLORS.white,
-    textSecondary: COLORS.gray400,
-    border: COLORS.gray700,
-    shadow: COLORS.black,
-    success: COLORS.success,
-    warning: COLORS.warning,
-    error: COLORS.error,
-    info: COLORS.info,
-    accent: COLORS.primaryLight,
-    card: COLORS.gray900,
-    notification: COLORS.error,
-    // Reading experience
-    readerBackground: COLORS.black,
-    highlightYellow: '#4b3a1a',
-    highlightBlue: '#1f3b6e',
-    highlightGreen: '#0b3b34',
+    primary: '#4a90e2', // Soft blue for primary elements
+    primaryLight: '#6ba3e8', // Lighter soft blue
+    primaryDark: '#2c5aa0', // Darker soft blue
+    secondary: '#7b68ee', // Soft purple for secondary elements
+    background: '#0f1419', // Very dark blue-gray background
+    surface: '#1a2332', // Dark blue-gray surface
+    text: '#e8f4f8', // Very light blue-white for text
+    textSecondary: '#a8c8d8', // Soft blue-gray for secondary text
+    border: '#2d3748', // Dark blue-gray border
+    shadow: '#000000',
+    success: '#48bb78', // Soft green
+    warning: '#ed8936', // Soft orange
+    error: '#f56565', // Soft red
+    info: '#4299e1', // Soft blue
+    accent: '#4a90e2', // Soft blue accent
+    card: '#1a2332', // Dark blue-gray cards
+    notification: '#f56565',
+    // Reading experience - optimized for comfortable reading
+    readerBackground: '#0f1419', // Very dark blue-gray for reading
+    highlightYellow: '#4a4520', // Muted yellow highlight
+    highlightBlue: '#1e3a5f', // Muted blue highlight
+    highlightGreen: '#1a4037', // Muted green highlight
   },
   spacing: SPACING,
   borderRadius: BORDER_RADIUS,
@@ -247,6 +247,13 @@ export const createLayoutStyles = (theme: Theme) => {
     marginMD: { margin: SPACING.md },
     marginLG: { margin: SPACING.lg },
     marginXL: { margin: SPACING.xl },
+
+    // Utility styles
+    flexWrap: { flexWrap: 'wrap' },
+    borderBottom: { 
+      borderBottomWidth: 1, 
+      borderBottomColor: theme.colors.border 
+    },
   });
 };
 

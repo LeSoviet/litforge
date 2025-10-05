@@ -250,7 +250,7 @@ const translations: Record<string, Record<string, string>> = {
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // State
   const [themeType, setThemeTypeState] = useState<ThemeType>('blue');
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [fontFamily, setFontFamilyState] = useState<FontFamily>('default');
   const [language, setLanguageState] = useState<Language>('es');
   const [isLoading, setIsLoading] = useState(true);

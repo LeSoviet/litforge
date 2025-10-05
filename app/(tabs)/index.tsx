@@ -345,9 +345,9 @@ export default function LibraryScreen() {
   return (
     <SafeAreaView style={styles.container.main}>
       {/* Header */}
-      <View style={[styles.header.container, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+      <View style={[styles.header.container, styles.rowBetween]}>
         <Text style={styles.header.title}>{t('library.title')}</Text>
-        <View style={[styles.row, { alignItems: 'center' }]}>
+        <View style={[styles.row, styles.rowCenter]}>
           <TouchableOpacity
             style={[styles.button.icon, staticStyles.marginRightMedium]}
             onPress={() => router.push('/stories')}
@@ -376,10 +376,10 @@ export default function LibraryScreen() {
 
       {/* Filters */}
       {showFilters && (
-        <View style={[styles.container.surface, staticStyles.paddingHorizontalMedium, { borderBottomWidth: 1, borderBottomColor: theme.colors.border }]}>
+        <View style={[styles.container.surface, staticStyles.paddingHorizontalMedium, styles.borderBottom]}>
           <View style={staticStyles.marginBottomSmall}>
             <Text style={[styles.textLabel, staticStyles.marginBottomSmall]}>Sort by:</Text>
-            <View style={[styles.row, { flexWrap: 'wrap' }]}>
+            <View style={[styles.row, styles.flexWrap]}>
               <TouchableOpacity
                 style={[styles.input.chip, sortBy === 'date' && styles.input.chipActive]}
                 onPress={() => {
@@ -411,7 +411,7 @@ export default function LibraryScreen() {
           </View>
           <View>
             <Text style={[styles.textLabel, staticStyles.marginBottomSmall]}>Filter by type:</Text>
-            <View style={[styles.row, { flexWrap: 'wrap' }]}>
+            <View style={[styles.row, styles.flexWrap]}>
               <TouchableOpacity
                 style={[styles.input.chip, filterType === 'all' && styles.input.chipActive]}
                 onPress={() => {
