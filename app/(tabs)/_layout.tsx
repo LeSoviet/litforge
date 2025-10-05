@@ -5,8 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme, useLanguage } from '../../contexts';
 
 export default function TabLayout() {
   const { theme } = useTheme();

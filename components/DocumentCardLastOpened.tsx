@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
-import { useFont } from '../contexts/FontContext';
+import { useFont } from '../contexts';
 
 interface DocumentCardLastOpenedProps {
   lastOpenedAt?: string;

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppSettings, ThemePreference } from '../types/Document';
+import { AppSettings, ThemePreference, ThemeType } from '../types';
 import { colors } from '../theme/colors';
 
 // Storage key for settings
@@ -20,7 +20,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   notifications: true,
   brightness: 1.0,
   language: 'es',
-  theme: 'light',
+  theme: 'blue',
   lineHeight: 1.5,
   textAlign: 'left',
   autoSave: true,
@@ -126,7 +126,7 @@ export class SettingsService {
     }
   }
 
-  static async setTheme(theme: ThemePreference): Promise<void> {
+  static async setTheme(theme: ThemeType): Promise<void> {
     try {
       await this.setSetting('theme', theme);
     } catch (error) {

@@ -10,8 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme, useLanguage } from '../../contexts';
 
 const createStyles = (theme: any) =>
   StyleSheet.create({

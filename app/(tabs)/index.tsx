@@ -11,14 +11,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
+import { Directory, File, Paths } from 'expo-file-system';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { DocumentService } from '../../services/DocumentService';
-import { Document } from '../../types/Document';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Document } from '../../types/types';
+import { useApp } from '../../contexts';
 import { useCommonStyles } from '../../hooks/useCommonStyles';
 
 export default function LibraryScreen() {
@@ -30,8 +29,7 @@ export default function LibraryScreen() {
   const [sortBy, setSortBy] = useState<'name' | 'type' | 'date'>('date');
   const [filterType, setFilterType] = useState<'all' | 'pdf' | 'md'>('all');
   const [showFilters, setShowFilters] = useState(false);
-  const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { theme, t } = useApp();
   const { styles, staticStyles } = useCommonStyles();
   const router = useRouter();
 
@@ -149,16 +147,16 @@ export default function LibraryScreen() {
         const file = result.assets[0];
         
         // Crear directorio para documentos si no existe
-        const documentsDir = `${FileSystem.documentDirectory}documents/`;
-        await FileSystem.makeDirectoryAsync(documentsDir, { intermediates: true });
+        const documentsDir = new Directory(Paths.document, 'documents');
+        if (!documentsDir.exists) {
+          documentsDir.create();
+        }
         
         // Copiar archivo al directorio de documentos
         const fileName = file.name || `document_${Date.now()}`;
-        const localPath = `${documentsDir}${fileName}`;
-        await FileSystem.copyAsync({
-          from: file.uri,
-          to: localPath,
-        });
+        const sourceFile = new File(file.uri);
+        const destinationFile = new File(documentsDir, fileName);
+        sourceFile.copy(destinationFile);
 
         const document: Document = {
           id: Date.now().toString(),
@@ -166,7 +164,7 @@ export default function LibraryScreen() {
           size: file.size || 0,
           createdAt: new Date().toISOString(),
           uri: file.uri,
-          filePath: localPath,
+          filePath: destinationFile.uri,
           type: getDocumentType(file.mimeType || '', fileName),
           dateAdded: new Date(),
           progress: 0,
@@ -262,10 +260,10 @@ export default function LibraryScreen() {
         />
       </View>
       <View style={staticStyles.flex1}>
-        <Text style={[styles.text.title, { marginBottom: 4 }]} numberOfLines={2}>
+        <Text style={[styles.textTitle, { marginBottom: 4 }]} numberOfLines={2}>
           {item.title}
         </Text>
-        <Text style={[styles.text.caption, { marginBottom: 8 }]}>
+        <Text style={[styles.textCaption, { marginBottom: 8 }]}>
           {item.type.toUpperCase()} • {(() => {
                   try {
                     if (item.dateAdded && typeof item.dateAdded === 'object' && item.dateAdded instanceof Date) {
@@ -282,7 +280,7 @@ export default function LibraryScreen() {
                 })()}
         </Text>
         {(item.totalPages || 0) > 0 && item.progress > 0 && (
-          <View style={[styles.layout.row, { alignItems: 'center' }]}>
+          <View style={[styles.row, { alignItems: 'center' }]}>
             <View style={[staticStyles.flex1, { height: 6, backgroundColor: theme.colors.border, borderRadius: 3, marginRight: 12 }]}>
               <View
                 style={[
@@ -291,14 +289,14 @@ export default function LibraryScreen() {
                 ]}
               />
             </View>
-            <Text style={[styles.text.caption, { color: theme.colors.primary, minWidth: 35, fontWeight: '600' }]}>
+            <Text style={[styles.textCaption, { color: theme.colors.primary, minWidth: 35, fontWeight: '600' }]}>
               {Math.round(Math.min((item.progress / (item.totalPages || 1)) * 100, 100))}%
             </Text>
           </View>
         )}
       </View>
       <TouchableOpacity
-        style={[styles.spacing.padding.sm, { borderRadius: 8 }]}
+        style={[staticStyles.paddingHorizontalMedium, { borderRadius: 8 }]}
         onPress={(e) => {
           e.stopPropagation();
           deleteDocument(item.id);
@@ -338,7 +336,7 @@ export default function LibraryScreen() {
       <SafeAreaView style={styles.container.main}>
         <View style={styles.container.centered}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={[styles.text.body, styles.spacing.margin.topMd]}>{t('library.loading')}</Text>
+          <Text style={[styles.textBody, styles.marginMD]}>{t('library.loading')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -349,15 +347,15 @@ export default function LibraryScreen() {
       {/* Header */}
       <View style={[styles.header.container, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
         <Text style={styles.header.title}>{t('library.title')}</Text>
-        <View style={[styles.layout.row, { alignItems: 'center' }]}>
+        <View style={[styles.row, { alignItems: 'center' }]}>
           <TouchableOpacity
-            style={[styles.button.icon, styles.spacing.margin.rightMd]}
+            style={[styles.button.icon, staticStyles.marginRightMedium]}
             onPress={() => router.push('/stories')}
           >
             <Ionicons name="book" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.button.icon, styles.spacing.margin.rightMd]}
+            style={[styles.button.icon, staticStyles.marginRightMedium]}
             onPress={() => setShowFilters(!showFilters)}
           >
             <Ionicons name="options" size={24} color={theme.colors.primary} />
@@ -378,10 +376,10 @@ export default function LibraryScreen() {
 
       {/* Filters */}
       {showFilters && (
-        <View style={[styles.container.surface, styles.spacing.padding.sm, { borderBottomWidth: 1, borderBottomColor: theme.colors.border }]}>
-          <View style={styles.spacing.margin.bottomXs}>
-            <Text style={[styles.text.label, styles.spacing.margin.bottomXs]}>Sort by:</Text>
-            <View style={[styles.layout.row, { flexWrap: 'wrap' }]}>
+        <View style={[styles.container.surface, staticStyles.paddingHorizontalMedium, { borderBottomWidth: 1, borderBottomColor: theme.colors.border }]}>
+          <View style={staticStyles.marginBottomSmall}>
+            <Text style={[styles.textLabel, staticStyles.marginBottomSmall]}>Sort by:</Text>
+            <View style={[styles.row, { flexWrap: 'wrap' }]}>
               <TouchableOpacity
                 style={[styles.input.chip, sortBy === 'date' && styles.input.chipActive]}
                 onPress={() => {
@@ -412,8 +410,8 @@ export default function LibraryScreen() {
             </View>
           </View>
           <View>
-            <Text style={[styles.text.label, styles.spacing.margin.bottomXs]}>Filter by type:</Text>
-            <View style={[styles.layout.row, { flexWrap: 'wrap' }]}>
+            <Text style={[styles.textLabel, staticStyles.marginBottomSmall]}>Filter by type:</Text>
+            <View style={[styles.row, { flexWrap: 'wrap' }]}>
               <TouchableOpacity
                 style={[styles.input.chip, filterType === 'all' && styles.input.chipActive]}
                 onPress={() => {

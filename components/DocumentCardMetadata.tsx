@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useFont } from '../contexts/FontContext';
+import { useFont } from '../contexts';
 
 interface DocumentCardMetadataProps {
   type: string;

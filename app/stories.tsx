@@ -9,8 +9,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../contexts/ThemeContext';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useApp } from '../contexts';
 import { DocumentService } from '../services/DocumentService';
 import { Asset } from 'expo-asset';
 import { useCommonStyles } from '../hooks/useCommonStyles';
@@ -159,8 +158,7 @@ interface Story {
 export default function StoriesScreen() {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
-  const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { theme, t } = useApp();
   const router = useRouter();
   const { styles, staticStyles } = useCommonStyles();
 

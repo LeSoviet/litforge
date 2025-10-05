@@ -1,70 +1,65 @@
 import * as FileSystem from 'expo-file-system';
-import * as mammoth from 'mammoth';
+import * as DocumentPicker from 'expo-document-picker';
 
 export class DocumentContentService {
   // Get document content based on type
-  static async getDocumentContent(uri: string, type: string): Promise<string> {
+  static async getDocumentContent(uri: string, mimeType: string): Promise<string> {
     try {
-      switch (type) {
-        case 'docx':
-          return await this.getDocxContent(uri);
-        case 'txt':
-        case 'md':
+      switch (mimeType) {
+        case 'text/plain':
           return await this.getTextContent(uri);
-        case 'pdf':
-          // PDF content extraction would require additional libraries
-          return 'Contenido PDF no disponible para vista previa';
+        case 'application/pdf':
+          return await this.getPdfContent(uri);
+        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+          return await this.getDocxContent(uri);
         default:
-          return 'Tipo de documento no soportado para vista previa';
+          return 'Tipo de archivo no soportado para vista previa.';
       }
     } catch (error) {
-      console.error('Error getting document content:', error);
-      return 'Error al cargar el contenido del documento';
+      console.error('Error al obtener contenido del documento:', error);
+      return 'Error al cargar el contenido del documento.';
     }
   }
 
-  // Get DOCX content and convert to HTML
   private static async getDocxContent(uri: string): Promise<string> {
+    // Usando expo-document-picker para manejar archivos DOCX
+    // En lugar de procesar el contenido directamente, proporcionamos información del archivo
     try {
-      const fileInfo = await FileSystem.getInfoAsync(uri);
-      if (!fileInfo.exists) {
-        throw new Error('File does not exist');
-      }
-
-      // Read file as base64
-      const base64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      // Convert base64 to ArrayBuffer
-      const binaryString = atob(base64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-
-      // Convert DOCX to HTML using mammoth
-      const result = await mammoth.convertToHtml({ arrayBuffer: bytes.buffer });
-      return result.value;
+      // Para archivos DOCX, retornamos información básica
+      // En una implementación completa, podrías usar una librería compatible con React Native
+      return 'Archivo DOCX detectado. Para ver el contenido completo, use una aplicación compatible con documentos de Word.\n\nNota: La funcionalidad de extracción de texto de DOCX está en desarrollo.';
     } catch (error) {
-      console.error('Error converting DOCX:', error);
-      throw error;
+      console.error('Error al procesar archivo DOCX:', error);
+      return 'Error al procesar el archivo DOCX.';
     }
   }
 
-  // Get plain text content
+  private static async getPdfContent(uri: string): Promise<string> {
+    // Para PDFs, retornamos un mensaje indicando que se debe usar un visor específico
+    return 'Archivo PDF detectado. Use el visor de PDF integrado para ver el contenido.';
+  }
+
   private static async getTextContent(uri: string): Promise<string> {
     try {
-      const fileInfo = await FileSystem.getInfoAsync(uri);
-      if (!fileInfo.exists) {
-        throw new Error('File does not exist');
-      }
-
-      return await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      const response = await fetch(uri);
+      return await response.text();
     } catch (error) {
-      console.error('Error reading text file:', error);
+      console.error('Error al leer archivo de texto:', error);
+      return 'Error al leer el archivo de texto.';
+    }
+  }
+
+  // Método auxiliar para seleccionar documentos usando expo-document-picker
+  static async pickDocument(): Promise<DocumentPicker.DocumentPickerResult> {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['text/plain', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+        copyToCacheDirectory: true,
+      });
+      
+      return result;
+    } catch (error) {
+      console.error('Error al seleccionar documento:', error);
       throw error;
     }
   }

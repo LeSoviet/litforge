@@ -6,9 +6,9 @@ import {
   StyleSheet,
   useColorScheme,
 } from 'react-native';
-import { Document } from '../types/Document';
+import { Document } from '../types';
 import { getTheme, shadows } from '../theme/colors';
-import { useFont } from '../contexts/FontContext';
+import { useFont } from '../contexts';
 import DocumentCardIcon from './DocumentCardIcon';
 import DocumentCardMetadata from './DocumentCardMetadata';
 import DocumentCardProgress from './DocumentCardProgress';

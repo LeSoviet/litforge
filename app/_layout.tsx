@@ -7,9 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Platform } from 'react-native';
 import 'react-native-reanimated';
 
-import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
-import { FontProvider } from '../contexts/FontContext';
-import { LanguageProvider } from '../contexts/LanguageContext';
+import { AppProvider, useTheme } from '../contexts';
 
 function AppContent() {
   const { isDarkMode, theme, isLoading } = useTheme();
@@ -69,13 +67,9 @@ export default function RootLayout() {
   }
 
   return (
-    <LanguageProvider>
-      <ThemeProvider>
-        <FontProvider>
-          <AppContent />
-        </FontProvider>
-      </ThemeProvider>
-    </LanguageProvider>
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
   );
 }
 

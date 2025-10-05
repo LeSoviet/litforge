@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
+import { useApp } from '../contexts';
 import { createCommonStyles, staticStyles, SPACING, BORDER_RADIUS, SHADOWS } from '../styles/commonStyles';
 
 /**
@@ -14,7 +14,7 @@ import { createCommonStyles, staticStyles, SPACING, BORDER_RADIUS, SHADOWS } fro
  * @returns Objeto con estilos comunes, constantes de diseño y utilidades
  */
 export const useCommonStyles = () => {
-  const { theme } = useTheme();
+  const { theme } = useApp();
   
   // Memoización para evitar recrear estilos en cada render
   const themedStyles = useMemo(() => {

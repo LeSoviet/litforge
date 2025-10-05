@@ -15,9 +15,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import Markdown from 'react-native-markdown-display';
 import { DocumentService } from '../services/DocumentService';
-import { Document, Note, Bookmark } from '../types/Document';
+import { Document, Note, Bookmark } from '../types';
 import * as FileSystem from 'expo-file-system';
-import { useTheme } from '../contexts/ThemeContext';
+import { useApp } from '../contexts';
 import { useCommonStyles } from '../hooks/useCommonStyles';
 
 function ReaderScreen() {
@@ -33,7 +33,7 @@ function ReaderScreen() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [scrollPosition, setScrollPosition] = useState(0);
   
-  const { theme } = useTheme();
+  const { theme } = useApp();
   const { styles, staticStyles } = useCommonStyles();
   const router = useRouter();
   const { documentId, document: documentParam } = useLocalSearchParams();
@@ -478,7 +478,7 @@ const loadDocument = async (id: string) => {
       {/* Header */}
       <View style={[styles.header, { paddingHorizontal: 16, paddingVertical: 12, marginTop: 8 }]}>
         {/* Fila única: Botón atrás, indicador de páginas centrado, e iconos */}
-        <View style={[staticStyles.flexRow, staticStyles.alignCenter, staticStyles.justifySpaceBetween]}>
+        <View style={[staticStyles.flexRow, staticStyles.alignCenter, staticStyles.justifyBetween]}>
           <TouchableOpacity onPress={goBack} style={[styles.iconButton, { padding: 8, minWidth: 32, minHeight: 32 }]}>
             <Ionicons name="arrow-back" size={20} color={theme.colors.text} />
           </TouchableOpacity>
@@ -524,7 +524,7 @@ const loadDocument = async (id: string) => {
                   <Text style={[styles.textSecondary, { fontSize: 14, fontStyle: 'italic', marginBottom: 4 }]}>"{note.selectedText}"</Text>
                 )}
                 <Text style={[styles.text, { fontSize: 14, marginBottom: 8 }]}>{note.text}</Text>
-                <View style={[staticStyles.flexRow, staticStyles.justifySpaceBetween, staticStyles.alignCenter]}>
+                <View style={[staticStyles.flexRow, staticStyles.justifyBetween, staticStyles.alignCenter]}>
                   <Text style={[styles.textSecondary, { fontSize: 12 }]}>
                     {note.dateCreated?.toLocaleDateString() || note.createdAt}
                   </Text>
@@ -559,7 +559,7 @@ const loadDocument = async (id: string) => {
               numberOfLines={4}
             />
 
-            <View style={[staticStyles.flexRow, staticStyles.justifySpaceBetween]}>
+            <View style={[staticStyles.flexRow, staticStyles.justifyBetween]}>
               <TouchableOpacity 
                 style={[styles.button, styles.buttonSecondary, { flex: 1, marginRight: 8 }]} 
                 onPress={() => setShowNoteModal(false)}

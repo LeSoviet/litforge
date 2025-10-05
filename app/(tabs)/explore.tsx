@@ -11,9 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { useTheme } from '../../contexts/ThemeContext';
-import { useFont, FontFamily, fontDisplayNames } from '../../contexts/FontContext';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useApp, FontFamily, fontDisplayNames } from '../../contexts';
 import { useCommonStyles } from '../../hooks/useCommonStyles';
 import { useAndroidFixes } from '../../styles/androidFixes';
 
@@ -21,9 +19,7 @@ export default function SettingsScreen() {
   const [fontSize, setFontSize] = useState(16);
   const [autoSave, setAutoSave] = useState(true);
   const [notifications, setNotifications] = useState(true);
-  const { theme, isDarkMode, setThemeMode } = useTheme();
-  const { fontFamily, setFontFamily } = useFont();
-  const { language, setLanguage, t } = useLanguage();
+  const { theme, isDarkMode, setThemeMode, fontFamily, setFontFamily, language, setLanguage, t } = useApp();
   const { styles, staticStyles } = useCommonStyles();
   const androidFixes = useAndroidFixes(theme);
 
@@ -151,12 +147,12 @@ export default function SettingsScreen() {
     subtitle?: string; 
     children: React.ReactNode;
   }) => (
-    <View style={[styles.card, styles.layout.row, { justifyContent: 'space-between' }]}>
-      <View style={[styles.layout.row, staticStyles.flex1]}>
+    <View style={[styles.card, styles.row, { justifyContent: 'space-between' }]}>
+          <View style={[styles.row, staticStyles.flex1]}>
         <Ionicons name={icon as any} size={24} color={theme.colors.primary} />
-        <View style={[styles.spacing.margin.leftMd, staticStyles.flex1]}>
-          <Text style={[styles.text.title, { color: theme.colors.text }]}>{title}</Text>
-          {subtitle && <Text style={[styles.text.caption, { color: theme.colors.textSecondary }]}>{subtitle}</Text>}
+        <View style={[staticStyles.marginLeftMedium, staticStyles.flex1]}>
+          <Text style={[styles.textTitle, { color: theme.colors.text }]}>{title}</Text>
+          {subtitle && <Text style={[styles.textCaption, { color: theme.colors.textSecondary }]}>{subtitle}</Text>}
         </View>
       </View>
       {children}
@@ -170,8 +166,8 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView style={staticStyles.flex1} showsVerticalScrollIndicator={false}>
-        <View style={styles.spacing.margin.bottomXl}>
-          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>Appearance</Text>
+        <View style={staticStyles.marginBottomLarge}>
+          <Text style={[styles.textSubtitle, staticStyles.marginBottomLarge, { color: theme.colors.text, textAlign: 'center' }]}>Appearance</Text>
           
           <SettingItem
             icon="moon"
@@ -181,7 +177,7 @@ export default function SettingsScreen() {
             <Switch
               value={isDarkMode}
               onValueChange={handleDarkModeToggle}
-              trackColor={{ false: theme.colors.border, true: theme.colors.primaryLight }}
+              trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
               thumbColor={isDarkMode ? theme.colors.primary : theme.colors.surface}
             />
           </SettingItem>
@@ -191,14 +187,14 @@ export default function SettingsScreen() {
             title={t('settings.fontSize')}
             subtitle={`Actual: ${fontSize}px`}
           >
-            <View style={styles.layout.row}>
+            <View style={styles.row}>
               <TouchableOpacity
-                style={[styles.button.primary, styles.spacing.margin.rightSm]}
+                style={[styles.button.primary, staticStyles.marginRightMedium]}
                 onPress={() => handleFontSizeChange(Math.max(12, fontSize - 2))}
               >
                 <Text style={styles.button.primaryText}>A-</Text>
               </TouchableOpacity>
-              <Text style={[styles.text.body, { minWidth: 24, textAlign: 'center', color: theme.colors.text }, styles.spacing.margin.rightSm]}>{fontSize}</Text>
+              <Text style={[styles.textBody, { minWidth: 24, textAlign: 'center', color: theme.colors.text }, staticStyles.marginRightMedium]}>{fontSize}</Text>
               <TouchableOpacity
                 style={styles.button.primary}
                 onPress={() => handleFontSizeChange(Math.min(24, fontSize + 2))}
@@ -214,17 +210,17 @@ export default function SettingsScreen() {
             subtitle={`Actual: ${fontDisplayNames[fontFamily]}`}
           >
             <TouchableOpacity
-              style={[styles.layout.row, styles.spacing.padding.sm, { backgroundColor: theme.colors.surface, borderRadius: 8, borderWidth: 1, borderColor: theme.colors.border }]}
+              style={[styles.row, staticStyles.paddingHorizontalMedium, { backgroundColor: theme.colors.surface, borderRadius: 8, borderWidth: 1, borderColor: theme.colors.border }]}
               onPress={showFontSelector}
             >
-              <Text style={[styles.text.caption, { color: theme.colors.primary, fontWeight: '500', marginRight: 4, textAlign: 'center' }]}>{t('common.change')}</Text>
+              <Text style={[styles.textCaption, { color: theme.colors.primary, fontWeight: '500', marginRight: 4, textAlign: 'center' }]}>{t('common.change')}</Text>
               <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
             </TouchableOpacity>
           </SettingItem>
         </View>
 
-        <View style={styles.spacing.margin.bottomXl}>
-          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>General</Text>
+        <View style={staticStyles.marginBottomLarge}>
+          <Text style={[styles.textSubtitle, staticStyles.marginBottomLarge, { color: theme.colors.text, textAlign: 'center' }]}>General</Text>
           
           <SettingItem
             icon="language"
@@ -232,17 +228,17 @@ export default function SettingsScreen() {
             subtitle={language === 'es' ? 'Español' : language === 'en' ? 'English' : 'Português'}
           >
             <TouchableOpacity
-              style={[styles.layout.row, styles.spacing.padding.sm, { backgroundColor: theme.colors.surface, borderRadius: 8, borderWidth: 1, borderColor: theme.colors.border }]}
+              style={[styles.row, staticStyles.paddingHorizontalMedium, { backgroundColor: theme.colors.surface, borderRadius: 8, borderWidth: 1, borderColor: theme.colors.border }]}
               onPress={showLanguageSelector}
             >
-              <Text style={[styles.text.caption, { color: theme.colors.primary, fontWeight: '500', marginRight: 4, textAlign: 'center' }]}>{t('common.change')}</Text>
+              <Text style={[styles.textCaption, { color: theme.colors.primary, fontWeight: '500', marginRight: 4, textAlign: 'center' }]}>{t('common.change')}</Text>
               <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
             </TouchableOpacity>
           </SettingItem>
         </View>
 
-        <View style={styles.spacing.margin.bottomXl}>
-          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>Reading</Text>
+        <View style={staticStyles.marginBottomLarge}>
+          <Text style={[styles.textSubtitle, staticStyles.marginBottomLarge, { color: theme.colors.text, textAlign: 'center' }]}>Reading</Text>
           
           <SettingItem
             icon="save"
@@ -252,7 +248,7 @@ export default function SettingsScreen() {
             <Switch
               value={autoSave}
               onValueChange={handleAutoSaveToggle}
-              trackColor={{ false: theme.colors.border, true: theme.colors.primaryLight }}
+              trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
               thumbColor={autoSave ? theme.colors.primary : theme.colors.surface}
             />
           </SettingItem>
@@ -265,34 +261,34 @@ export default function SettingsScreen() {
             <Switch
               value={notifications}
               onValueChange={handleNotificationsToggle}
-              trackColor={{ false: theme.colors.border, true: theme.colors.primaryLight }}
+              trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
               thumbColor={notifications ? theme.colors.primary : theme.colors.surface}
             />
           </SettingItem>
         </View>
 
-        <View style={styles.spacing.margin.bottomXl}>
-          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>Storage</Text>
+        <View style={staticStyles.marginBottomLarge}>
+          <Text style={[styles.textSubtitle, staticStyles.marginBottomLarge, { color: theme.colors.text, textAlign: 'center' }]}>Storage</Text>
           
-          <TouchableOpacity style={[styles.layout.row, styles.card, { borderWidth: 1, borderColor: theme.colors.error }]} onPress={clearAllData}>
+          <TouchableOpacity style={[styles.row, styles.card, { borderWidth: 1, borderColor: theme.colors.error }]} onPress={clearAllData}>
             <Ionicons name="trash" size={24} color={theme.colors.error} />
-            <View style={[styles.spacing.margin.leftMd, staticStyles.flex1]}>
-              <Text style={[styles.text.title, { color: theme.colors.error }]}>
+            <View style={[staticStyles.marginLeftMedium, staticStyles.flex1]}>
+              <Text style={[styles.textTitle, { color: theme.colors.error }]}>
                 {t('settings.clearData')}
               </Text>
-              <Text style={[styles.text.caption, { color: theme.colors.textSecondary }]}>
+              <Text style={[styles.textCaption, { color: theme.colors.textSecondary }]}>
                 {t('settings.clearDataDesc')}
               </Text>
             </View>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.spacing.margin.bottomXl}>
-          <Text style={[styles.text.subtitle, styles.spacing.margin.bottomLg, { color: theme.colors.text, textAlign: 'center' }]}>About</Text>
+        <View style={staticStyles.marginBottomLarge}>
+          <Text style={[styles.textSubtitle, staticStyles.marginBottomLarge, { color: theme.colors.text, textAlign: 'center' }]}>About</Text>
           <View style={[styles.card, { alignItems: 'center', paddingVertical: 20, paddingHorizontal: 16 }]}>
-            <Text style={[styles.text.heading, { color: theme.colors.primary, marginBottom: 8, textAlign: 'center' }]}>LitForge</Text>
-            <Text style={[styles.text.body, { color: theme.colors.textSecondary, marginBottom: 16, textAlign: 'center' }]}>Version 1.0.0</Text>
-            <Text style={[styles.text.caption, { 
+            <Text style={[styles.textHeading, { color: theme.colors.primary, marginBottom: 8, textAlign: 'center' }]}>LitForge</Text>
+            <Text style={[styles.textBody, { color: theme.colors.textSecondary, marginBottom: 16, textAlign: 'center' }]}>Version 1.0.0</Text>
+            <Text style={[styles.textCaption, { 
               textAlign: 'center', 
               lineHeight: 18, 
               color: theme.colors.text,

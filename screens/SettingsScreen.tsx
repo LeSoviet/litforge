@@ -10,13 +10,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import type { Theme, ThemeType } from '../theme/colors';
-import { useTheme } from '../contexts/ThemeContext';
+import type { Theme, ThemeType } from '../types/types';
+import { useTheme } from '../contexts';
 import { useAndroidFixes } from '../styles/androidFixes';
 // TODO: Create and implement SettingsService
 import { SettingsService } from '../services/SettingsService';
 import { DocumentService } from '../services/DocumentService';
-import { AppSettings } from '../types/Document';
+import { AppSettings } from '../types';
 import type { SettingsScreenProps } from '../types/navigation';
 
 const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
@@ -29,7 +29,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
     defaultFontSize: 16,
     keepScreenOn: false,
     defaultReadingMode: 'scroll',
-    highlightColor: theme.colors.primaryLight,
+    highlightColor: theme.colors.primary,
     fontSize: 16,
     fontFamily: 'Inter',
     readingMode: 'scroll',
@@ -99,7 +99,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
       setSettings(newSettings);
       
       // Sincronizar con el contexto de temas si es necesario
-      if (key === 'theme' && (value === 'light' || value === 'dark')) {
+      if (key === 'theme' && (value === 'blue' || value === 'green' || value === 'purple' || value === 'orange')) {
         setThemeType(value);
       }
       
@@ -156,12 +156,16 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
 
   const getThemeDisplayName = (themeType: ThemeType): string => {
     switch (themeType) {
-      case 'light':
-        return 'Light';
-      case 'dark':
-        return 'Dark';
+      case 'blue':
+        return 'Blue';
+      case 'green':
+        return 'Green';
+      case 'purple':
+        return 'Purple';
+      case 'orange':
+        return 'Orange';
       default:
-        return 'Light';
+        return 'Blue';
     }
   };
 
@@ -267,7 +271,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
                 onValueChange={(value) => updateSetting('hapticFeedback', value)}
                 trackColor={{
                   false: theme.colors.border,
-                  true: theme.colors.primaryLight,
+                  true: theme.colors.primary,
                 }}
                 thumbColor={theme.colors.primary}
               />
@@ -281,7 +285,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
                 onValueChange={(value) => updateSetting('autoSaveProgress', value)}
                 trackColor={{
                   false: theme.colors.border,
-                  true: theme.colors.primaryLight,
+                  true: theme.colors.primary,
                 }}
                 thumbColor={theme.colors.primary}
               />
@@ -295,7 +299,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ route }) => {
                 onValueChange={(value) => updateSetting('keepScreenOn', value)}
                 trackColor={{
                   false: theme.colors.border,
-                  true: theme.colors.primaryLight,
+                  true: theme.colors.primary,
                 }}
                 thumbColor={theme.colors.primary}
               />
@@ -421,7 +425,7 @@ const createStyles = (theme: Theme, androidFixes: AndroidFixesStyles) => StyleSh
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: theme.colors.primaryLight,
+    backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,

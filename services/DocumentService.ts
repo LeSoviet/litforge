@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as FileSystem from 'expo-file-system';
+import { File, Directory, Paths } from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
-import { Document } from '../types/Document';
-import { ExportData } from '../types/DataTypes';
+import { Document, ExportData } from '../types';
 import { BookmarkService } from './BookmarkService';
 import { NoteService } from './NoteService';
 import { DocumentContentService } from './DocumentContentService';
@@ -57,21 +56,19 @@ export class DocumentService {
 
       // Copy file to app's document directory
       const filename = `${generateId()}.${extension}`;
-      const destinationUri = `${FileSystem.documentDirectory}${filename}`;
+      const sourceFile = new File(file.uri);
+      const destinationFile = new File(Paths.document, filename);
       
-      await FileSystem.copyAsync({
-        from: file.uri,
-        to: destinationUri,
-      });
+      sourceFile.copy(destinationFile);
 
       // Get document metadata
-      const metadata = await DocumentContentService.getDocumentMetadata(destinationUri, type);
+      const metadata = await DocumentContentService.getDocumentMetadata(destinationFile.uri, type);
 
       const document: Document = {
         id: generateId(),
         title: file.name || getFilenameFromUri(file.uri),
-        uri: destinationUri,
-        filePath: destinationUri,
+        uri: destinationFile.uri,
+        filePath: destinationFile.uri,
         type,
         size: file.size || 0,
         createdAt: new Date().toISOString(),
@@ -101,7 +98,10 @@ export class DocumentService {
       if (document) {
         // Remove file from filesystem
         try {
-          await FileSystem.deleteAsync(document.uri);
+          const file = new File(document.uri);
+          if (file.exists) {
+            file.delete();
+          }
         } catch (fileError) {
           console.warn('Could not delete file:', fileError);
         }
@@ -245,10 +245,9 @@ export class DocumentService {
       await NoteService.clearAllNotes();
       
       // Also clear the documents directory
-      const documentsDir = FileSystem.documentDirectory + 'documents/';
-      const dirInfo = await FileSystem.getInfoAsync(documentsDir);
-      if (dirInfo.exists) {
-        await FileSystem.deleteAsync(documentsDir);
+      const documentsDir = new Directory(Paths.document, 'documents');
+      if (documentsDir.exists) {
+        documentsDir.delete();
       }
     } catch (error) {
       console.error('Error clearing all data:', error);

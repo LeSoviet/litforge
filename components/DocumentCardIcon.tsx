@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Document } from '../types/Document';
+import { Document } from '../types';
 
 interface DocumentCardIconProps {
   type: Document['type'];

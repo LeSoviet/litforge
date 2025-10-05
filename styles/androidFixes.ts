@@ -4,9 +4,10 @@ import { Theme } from '../types';
 
 /**
  * Estilos específicos para corregir inconsistencias en Android
- * Especialmente para modo oscuro y problemas de centrado
+ * Versión simplificada para evitar crashes en Android Go
  */
 export const createAndroidFixes = (theme: Theme) => {
+  // Simplificar para Android Go - solo aplicar fixes básicos
   if (Platform.OS !== 'android') {
     return StyleSheet.create({
       textCenterFix: {},
@@ -22,91 +23,66 @@ export const createAndroidFixes = (theme: Theme) => {
   }
 
   return StyleSheet.create({
-    // Corrección para centrado de texto en Android modo oscuro
+    // Corrección básica para centrado de texto
     textCenterFix: {
       textAlign: 'center',
-      textAlignVertical: 'center', // Específico para Android
-      includeFontPadding: false, // Elimina padding extra en Android
     },
     
-    // Corrección para centrado de botones en Android
+    // Corrección básica para botones
     buttonCenterFix: {
       justifyContent: 'center',
       alignItems: 'center',
-      textAlignVertical: 'center',
-      includeFontPadding: false,
     },
     
-    // Corrección para contenedores centrados
+    // Corrección básica para contenedores
     centerContainerFix: {
       alignItems: 'center',
       justifyContent: 'center',
-      // Forzar re-render en cambio de tema
-      backgroundColor: theme.colors.background,
     },
     
-    // Corrección para botones en modo oscuro
+    // Corrección simplificada para botones en modo oscuro
     buttonDarkModeFix: {
-      backgroundColor: theme.dark ? theme.colors.surface : theme.colors.primary,
-      borderWidth: theme.dark ? 1 : 0,
-      borderColor: theme.dark ? theme.colors.border : 'transparent',
-      elevation: theme.dark ? 2 : 4, // Sombra específica para Android
+      backgroundColor: theme.colors.surface,
     },
     
-    // Corrección para texto en modo oscuro
+    // Corrección simplificada para texto en modo oscuro
     textDarkModeFix: {
       color: theme.colors.text,
-      // Forzar contraste en modo oscuro
-      textShadowColor: theme.dark ? 'rgba(0,0,0,0.3)' : 'transparent',
-      textShadowOffset: theme.dark ? { width: 0, height: 1 } : { width: 0, height: 0 },
-      textShadowRadius: theme.dark ? 1 : 0,
     },
     
-    // Corrección para superficies en modo oscuro
+    // Corrección simplificada para superficies en modo oscuro
     surfaceDarkModeFix: {
       backgroundColor: theme.colors.surface,
-      // Asegurar contraste adecuado
-      borderWidth: theme.dark ? StyleSheet.hairlineWidth : 0,
-      borderColor: theme.dark ? theme.colors.border : 'transparent',
     },
     
-    // Corrección para iconos en modo oscuro
+    // Corrección simplificada para iconos en modo oscuro
     iconDarkModeFix: {
-      tintColor: theme.colors.text,
-      // Mejorar visibilidad en modo oscuro
-      opacity: theme.dark ? 0.9 : 1,
+      color: theme.colors.text,
     },
     
-    // Corrección para inputs en modo oscuro
+    // Corrección simplificada para inputs en modo oscuro
     inputDarkModeFix: {
       backgroundColor: theme.colors.surface,
       color: theme.colors.text,
-      borderWidth: 1,
-      borderColor: theme.dark ? theme.colors.border : theme.colors.primary,
-      // Padding específico para Android
-      paddingVertical: 12,
-      paddingHorizontal: 16,
+      borderColor: theme.colors.border,
     },
     
-    // Corrección para headers en modo oscuro
+    // Corrección simplificada para headers en modo oscuro
     headerDarkModeFix: {
       backgroundColor: theme.colors.background,
-      borderBottomWidth: theme.dark ? StyleSheet.hairlineWidth : 0,
-      borderBottomColor: theme.dark ? theme.colors.border : 'transparent',
-      elevation: theme.dark ? 1 : 3,
     },
   });
 };
 
 /**
- * Hook para aplicar correcciones específicas de Android
+ * Hook simplificado para aplicar correcciones específicas de Android
  */
 export const useAndroidFixes = (theme: Theme) => {
   return createAndroidFixes(theme);
 };
 
 /**
- * Utilidad para combinar estilos con correcciones de Android
+ * Utilidad simplificada para combinar estilos con correcciones de Android
  */
 export const withAndroidFixes = (baseStyles: any, theme: Theme) => {
   const androidFixes = createAndroidFixes(theme);
